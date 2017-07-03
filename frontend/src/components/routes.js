@@ -7,6 +7,61 @@ import Home from './Home'
 import Dashboard from './Dashboard'
 import { firebaseAuth } from '../constants/firebase'
 
+export default class App extends Component {
+  state = {
+    authed: false,
+    loading: true
+  }
+  componentDidMount() {
+    this.removeListener = firebaseAuth().onAuthStateChanged(user => {
+      if (user) {
+        this.setState({
+          authed: true,
+          loading: false
+        })
+      } else {
+        this.setState({
+          authed: false,
+          loading: false
+        })
+      }
+    })
+  }
+  componentWillUnmount() {
+    this.removeListener()
+  }
+  render() {
+    return this.state.loading === true
+      ? <h1 className="tc">Loading...</h1>
+      : <BrowserRouter>
+          <main className=" ba b5 b--near-black bw4 h-100">
+            <PropsRoute path="/" component={Nav} authed={this.state.authed} />
+            <Switch>
+              <div className="pa3">
+                <Route path="/" exact component={Home} />
+                <PublicRoute
+                  authed={this.state.authed}
+                  path="/login"
+                  component={Login}
+                />
+                <PublicRoute
+                  authed={this.state.authed}
+                  path="/register"
+                  component={Register}
+                />
+                <PrivateRoute
+                  authed={this.state.authed}
+                  path="/dashboard"
+                  component={Dashboard}
+                />
+              </div>
+              <Route render={() => <h3>No Match</h3>} />
+            </Switch>
+          </main>
+        </BrowserRouter>
+  }
+}
+
 function PrivateRoute({ component: Component, authed, ...rest }) {
   return (
     <Route
@@ -47,59 +102,4 @@ function PropsRoute({ component, ...rest }) {
       }}
     />
   )
-}
-
-export default class App extends Component {
-  state = {
-    authed: false,
-    loading: true
-  }
-  componentDidMount() {
-    this.removeListener = firebaseAuth().onAuthStateChanged(user => {
-      if (user) {
-        this.setState({
-          authed: true,
-          loading: false
-        })
-      } else {
-        this.setState({
-          authed: false,
-          loading: false
-        })
-      }
-    })
-  }
-  componentWillUnmount() {
-    this.removeListener()
-  }
-  render() {
-    return this.state.loading === true
-      ? <h1 className="tc">Loading...</h1>
-      : <BrowserRouter>
-          <div className=" ba b5 b--yellow bw4 vh-100 near-black">
-            <PropsRoute path="/" component={Nav} authed={this.state.authed} />
-            <Switch>
-              <div className="pa3">
-                <Route path="/" exact component={Home} />
-                <PublicRoute
-                  authed={this.state.authed}
-                  path="/login"
-                  component={Login}
-                />
-                <PublicRoute
-                  authed={this.state.authed}
-                  path="/register"
-                  component={Register}
-                />
-                <PrivateRoute
-                  authed={this.state.authed}
-                  path="/dashboard"
-                  component={Dashboard}
-                />
-              </div>
-              <Route render={() => <h3>No Match</h3>} />
-            </Switch>
-          </div>
-        </BrowserRouter>
-  }
 }

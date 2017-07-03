@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { login, resetPassword } from '../helpers/auth'
+import { Link } from 'react-router-dom'
 
 function setErrorMsg(error) {
   return {
@@ -26,43 +27,70 @@ export default class Login extends Component {
   }
   render() {
     return (
-      <div className="col-sm-6 col-sm-offset-3">
-        <h1> Login </h1>
-        <form onSubmit={this.handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
+      <form className="measure center" onSubmit={this.handleSubmit}>
+        <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
+          <legend className="f4 fw6 ph0 mh0">Login</legend>
+          <div className="mt3">
+            <label className="db fw6 lh-copy f6" for="email-address">
+              Email
+            </label>
             <input
-              className="form-control"
+              className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+              type="email"
+              name="email-address"
+              id="email-address"
               ref={email => (this.email = email)}
-              placeholder="Email"
             />
           </div>
-          <div className="form-group">
-            <label>Password</label>
+          <div className="mv3">
+            <label className="db fw6 lh-copy f6" for="password">
+              Password
+            </label>
             <input
+              className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
               type="password"
-              className="form-control"
-              placeholder="Password"
+              name="password"
+              id="password"
               ref={pw => (this.pw = pw)}
             />
           </div>
           {this.state.loginMessage &&
-            <div className="alert alert-danger" role="alert">
+            <div classNameName="alert alert-danger" role="alert">
               <span
-                className="glyphicon glyphicon-exclamation-sign"
+                classNameName="glyphicon glyphicon-exclamation-sign"
                 aria-hidden="true"
               />
-              <span className="sr-only">Error:</span>
+              <span classNameName="sr-only">Error:</span>
               &nbsp;{this.state.loginMessage}{' '}
-              <a href="#" onClick={this.resetPassword} className="alert-link">
+              <a
+                href="#"
+                onClick={this.resetPassword}
+                classNameName="alert-link"
+              >
                 Forgot Password?
               </a>
             </div>}
-          <button type="submit" className="btn btn-primary">
-            Login
-          </button>
-        </form>
-      </div>
+        </fieldset>
+        <div className="">
+          <input
+            className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
+            type="submit"
+            value="Sign in"
+          />
+        </div>
+        <div className="lh-copy mt3">
+          <Link to="/register" href="#0" className="f6 link dim black db">
+            Sign up
+          </Link>
+          <a
+            href="#0"
+            className="f6 link dim black db"
+            onClick={this.resetPassword}
+          >
+            Forgot your password?
+          </a>
+        </div>
+      </form>
     )
   }
 }

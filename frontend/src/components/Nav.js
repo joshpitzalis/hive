@@ -4,18 +4,15 @@ import { logout } from '../helpers/auth'
 import { Link } from 'react-router-dom'
 
 const Nav = ({ authed }) =>
-  <header className="bg-yellow w-100 pa3">
+  <header className="bg-near-black w-100 pa3">
     <nav className="f6 fw6 ttu tracked flex justify-between items-center">
-      <Link
-        to={authed ? '/dashboard' : '/'}
-        className="link dim near-black f2 black"
-      >
+      <Link to={authed ? '/dashboard' : '/'} className="link dim white f2">
         HIVE
       </Link>
       <div>
         {authed
           ? <button
-              className="link dim near-black dib"
+              className="link dim dib f6 button-reset bg-white ba b--black-10 dim pointer pv1 black-60"
               onClick={() => {
                 logout()
               }}
@@ -23,11 +20,8 @@ const Nav = ({ authed }) =>
               Logout
             </button>
           : <span>
-              <Link to="/login" className="link dim near-black dib">
-                Login
-              </Link>
-              <Link to="/register" className="link dim near-black dib pl3">
-                Register
+              <Link to="/login" className="link dim dib white">
+                Start Here
               </Link>
             </span>}
       </div>

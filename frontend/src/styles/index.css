@@ -1,11 +1,10 @@
-button {
+/*button {
   border-radius: none;
   background-color: #111;
+  color: white;
   height: 2rem;
-  width: 5rem;
-  color: #ffd621 !important;
   border: none;
   cursor: pointer;
   text-transform: uppercase;
   font-size: small;
-}
+}*/
