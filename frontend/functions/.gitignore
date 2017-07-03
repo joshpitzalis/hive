@@ -6,12 +6,7 @@
 # testing
 /coverage
 
-# production
-/build
-
 # misc
-/database.rules.json
-/src/constants
 .DS_Store
 .env.local
 .env.development.local
