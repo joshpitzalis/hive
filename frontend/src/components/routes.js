@@ -34,21 +34,21 @@ export default class App extends Component {
     return this.state.loading === true
       ? <h1 className="tc">Loading...</h1>
       : <BrowserRouter>
-          <main className=" ba b5 b--near-black bw4 h-100">
-            <PropsRoute path="/" component={Nav} authed={this.state.authed} />
-            <Switch>
-              <div className="pa3">
-                <Route path="/" exact component={Home} />
-                <PublicRoute
-                  authed={this.state.authed}
-                  path="/login"
-                  component={Login}
-                />
-                <PublicRoute
-                  authed={this.state.authed}
-                  path="/register"
-                  component={Register}
-                />
+        <main className="ba b5 b--near-black bw4 h-100">
+          <PropsRoute path="/" component={Nav} authed={this.state.authed} />
+          <Switch>
+            <div className="pa3">
+              <Route path="/" exact component={Home} />
+              <PublicRoute
+                authed={this.state.authed}
+                path="/login"
+                component={Login}
+              />
+              <PublicRoute
+                authed={this.state.authed}
+                path="/register"
+                component={Register}
+              />
                 <PrivateRoute
                   authed={this.state.authed}
                   path="/dashboard"
