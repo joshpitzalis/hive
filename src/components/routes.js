@@ -34,7 +34,7 @@ export default class App extends Component {
     return this.state.loading === true
       ? <h1 className="tc">Loading...</h1>
       : <BrowserRouter>
-          <main className=" ba b5 b--near-black bw4 h-100">
+          <main className="ba b5 b--near-black bw4 h-100">
             <PropsRoute path="/" component={Nav} authed={this.state.authed} />
             <Switch>
               <div className="pa3">

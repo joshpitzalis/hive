@@ -10,8 +10,7 @@
 /build
 
 # misc
-/database.rules.json
-/src/constants
+/constants
 .DS_Store
 .env.local
 .env.development.local
