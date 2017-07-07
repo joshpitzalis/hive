@@ -38,6 +38,7 @@ export default class Add extends Component {
             <h1>I will</h1>
             <input
               type="text"
+              name="deliverable"
               onChange={this.handleChange('deliverable')}
               className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-80"
               placeholder="send something"

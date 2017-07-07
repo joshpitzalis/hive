@@ -17,7 +17,6 @@ export default class Dashboard extends Component {
         ready: true
       }
     ],
-    thingsYouNeedToDo: [],
     add: false
   }
 
@@ -46,18 +45,18 @@ export default class Dashboard extends Component {
       />
     )
 
-    const ThingsYouNeedToDo = Object.keys(
-      this.state.thingsYouNeedToDo
-    ).map((item, index) =>
-      <Deliverable
-        key={index}
-        ready={false}
-        myStuff={true}
-        title={this.state.thingsYouNeedToDo[item].deliverable}
-        from={this.state.thingsYouNeedToDo[item].client}
-        due={this.state.thingsYouNeedToDo[item].deadline}
-      />
-    )
+    const ThingsYouNeedToDo =
+      this.state.thingsYouNeedToDo &&
+      Object.keys(this.state.thingsYouNeedToDo).map((item, index) =>
+        <Deliverable
+          key={index}
+          ready={false}
+          myStuff={true}
+          title={this.state.thingsYouNeedToDo[item].deliverable}
+          from={this.state.thingsYouNeedToDo[item].client}
+          due={this.state.thingsYouNeedToDo[item].deadline}
+        />
+      )
     return (
       <div className="mw6 center tc">
         {this.state.add && <Add closeAddModal={this.toggleAddModal} />}
