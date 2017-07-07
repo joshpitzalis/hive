@@ -8,5 +8,15 @@
     "cors": "^2.8.3",
     "express": "^4.15.3",
     "stripe": "^4.23.1"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
   }
 }
