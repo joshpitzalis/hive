@@ -4,10 +4,11 @@ node_js:
 cache:
   directories:
     - node_modules
-before_install:
+    - /home/travis/.cypress/Cypress
+install:
   - npm install
   - npm install -g cypress-cli
 before_script:
-  - yarn start
+  - npm start -- --silent &
 script:
   - cypress run --record
