@@ -11,7 +11,7 @@
 
 # misc
 /database.rules.json
-/src/constants
+/src/constants/stripe.js
 .DS_Store
 .env.local
 .env.development.local
