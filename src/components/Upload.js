@@ -78,8 +78,9 @@ export default class UploadDeliverable extends Component {
               onChange={this.handleUrl}
             />
             <Dropzone
-              className="ba b--silver w5 pa3 flex col mxc h-100 pointer dim center w-80 mv3"
+              className="ba b--silver w5 pa3 flex col mxc h-100 pointer dim center w-80 mv3 grow"
               onDrop={this.handleUpload}
+              activeStyle={{ transform: 'scale(1.05)' }}
             >
               <div className="flex mxc w-100">
                 <Upload />
@@ -90,6 +91,7 @@ export default class UploadDeliverable extends Component {
                 <progress
                   value={this.state.transferCurrent}
                   max={this.state.transferTotal}
+                  className="w-100"
                 />}
             </Dropzone>
 
