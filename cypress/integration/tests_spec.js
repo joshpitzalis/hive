@@ -35,10 +35,11 @@ describe('Creating a New Task', () => {
     cy.get('input[name=deliverable]').type(`something something`)
     cy.get('input[placeholder=someone]').type(`something@something.com`)
     cy.get('input[type=submit]').click()
-    cy.contains('something something')
+    cy.contains('Promise To Do Something')
   })
 
   // test a specific date
+  // test with a link
 })
 
 describe('Delivering on a Task', () => {
@@ -48,14 +49,15 @@ describe('Delivering on a Task', () => {
     cy.get('input[name=password]').type(`test123{enter}`)
   })
 
-  it('upload and submit an image', () => {
+  it('upload and submit a ', () => {
     // cy.contains('Add a New Thing').click()
     // cy.get('input[name=deliverable]').type(`something something`)
     // cy.get('input[placeholder=someone]').type(`something@something.com`)
     // cy.get('input[type=submit]').click()
     // cy.contains('something something')
   })
-  // test specific date
+
+  // test that user account gets created from email in task
 })
 
 // make sure you delete user at the end

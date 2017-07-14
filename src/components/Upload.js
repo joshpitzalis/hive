@@ -42,7 +42,7 @@ export default class UploadDeliverable extends Component {
   }
 
   handleSubmit = () => {
-    uploadDeliverable(this.state.upload, this.state.url, this.props.clientEmail)
+    uploadDeliverable(this.state.upload, this.state.url, this.props.taskId)
     this.props.toggleUploadModal()
   }
 

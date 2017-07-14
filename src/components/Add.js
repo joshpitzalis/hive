@@ -22,7 +22,8 @@ export default class Add extends Component {
     createNewTask(
       this.state.deliverable,
       this.state.client,
-      this.state.deadline
+      this.state.deadline,
+      Date.now()
     )
     this.props.closeAddModal()
   }
@@ -35,13 +36,13 @@ export default class Add extends Component {
             <div className="tr dim pointer" onClick={this.props.closeAddModal}>
               <Close />
             </div>
-            <h1>I will</h1>
+            <h1>I will send</h1>
             <input
               type="text"
               name="deliverable"
               onChange={this.handleChange('deliverable')}
               className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-80"
-              placeholder="send something"
+              placeholder="something I promise to do"
               value={this.state.deliverable}
             />
             <h1>to</h1>
@@ -49,7 +50,7 @@ export default class Add extends Component {
               type="email"
               onChange={this.handleChange('client')}
               className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-80"
-              placeholder="someone"
+              placeholder="someone's email address"
               value={this.state.client}
             />
             <h1>by</h1>

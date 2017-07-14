@@ -1,20 +1,33 @@
 import { firebaseAuth, ref } from '../constants/firebase.js'
 
-export function createNewTask(deliverable, client, deadline) {
-  ref
+export function createNewTask(deliverable, client, deadline, taskId) {
+  const newTaskKey = ref
     .child(`users/${firebaseAuth().currentUser.uid}/tasks`)
-    .push({ deliverable: deliverable, client: client, deadline: deadline })
+    .push().key
+
+  ref
+    .child(`users/${firebaseAuth().currentUser.uid}/tasks/${newTaskKey}`)
+    .update({
+      deliverable,
+      client,
+      deadline,
+      createdAt: Date.now(),
+      taskId: newTaskKey,
+      from: firebaseAuth().currentUser.email,
+      ready: false
+    })
     .catch(error => console.error(error))
 }
 
 export function uploadDeliverable(
   file = null,
   url = null,
-  email,
-  time = new Date()
+  taskId,
+  timeDelivered = Date.now()
 ) {
   ref
-    .child(`users/${firebaseAuth().currentUser.uid}/delivered`)
-    .push({ file, url, email, time })
+    .child(`users/${firebaseAuth().currentUser.uid}/tasks`)
+    .child(taskId)
+    .update({ file, url, timeDelivered, ready: true })
     .catch(error => console.error(error))
 }

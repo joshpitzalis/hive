@@ -38,21 +38,23 @@ export default class Dashboard extends Component {
   render() {
     const ThingsYouWillGet =
       this.state.ThingsYouWillGet &&
-      Object.keys(this.state.ThingsYouWillGet).map((item, index) =>
+      Object.keys(this.state.ThingsYouWillGet).map(item =>
         <Deliverable
-          key={index}
+          key={this.state.ThingsYouWillGet[item].taskId}
           ready={this.state.ThingsYouWillGet[item].ready}
           title={this.state.ThingsYouWillGet[item].title}
           from={this.state.ThingsYouWillGet[item].from}
           due={this.state.ThingsYouWillGet[item].due}
+          taskId={this.state.ThingsYouWillGet[item].taskId}
+          file={this.state.ThingsYouWillGet[item].file}
         />
       )
 
     const ThingsYouNeedToDo =
       this.state.thingsYouNeedToDo &&
-      Object.keys(this.state.thingsYouNeedToDo).map((item, index) =>
+      Object.keys(this.state.thingsYouNeedToDo).map(item =>
         <Deliverable
-          key={index}
+          key={this.state.thingsYouNeedToDo[item].taskId}
           ready={false}
           myStuff={true}
           title={this.state.thingsYouNeedToDo[item].deliverable}
@@ -60,6 +62,7 @@ export default class Dashboard extends Component {
           due={this.state.thingsYouNeedToDo[item].deadline}
           toggleUploadModal={this.toggleUploadModal}
           deliver={this.state.deliver}
+          taskId={this.state.thingsYouNeedToDo[item].taskId}
         />
       )
     return (
@@ -67,11 +70,10 @@ export default class Dashboard extends Component {
         {this.state.add && <Add closeAddModal={this.toggleAddModal} />}
         {/* {this.state.deliver &&
         <Upload closeUploadModal={this.toggleUploadModal} />} */}
-        <p className="f4 tc mv3 b">PEOPLE</p>
         <div className="pv3">
           {ThingsYouWillGet}
         </div>
-        <p className="f4 tc mv3 b">YOU</p>
+        {ThingsYouNeedToDo && <p className="f4 tc mv3 b">Do</p>}
         <div className="pv3">
           {ThingsYouNeedToDo}
         </div>
@@ -79,7 +81,7 @@ export default class Dashboard extends Component {
           className="link dim dib f6 button-reset bg-white ba b--black-10 dim pointer pv1 black-60 mv5"
           onClick={this.toggleAddModal}
         >
-          Add a New Thing
+          Promise To Do Something
         </button>
       </div>
     )
