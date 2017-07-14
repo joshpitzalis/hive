@@ -42,19 +42,8 @@ export default class UploadDeliverable extends Component {
   }
 
   handleSubmit = () => {
-    console.log(
-      this.state.upload,
-      this.state.url,
-      new Date(),
-      this.props.clientEmail
-    )
-    uploadDeliverable(
-      this.state.upload,
-      this.state.url,
-      new Date(),
-      this.props.clientEmail
-    )
-    this.props.closeUploadModal()
+    uploadDeliverable(this.state.upload, this.state.url, this.props.clientEmail)
+    this.props.toggleUploadModal()
   }
 
   render() {
@@ -64,7 +53,7 @@ export default class UploadDeliverable extends Component {
           <div className="bg-white pa3 w5 w-40-ns tc">
             <div
               className="tr dim pointer"
-              onClick={this.props.closeUploadModal}
+              onClick={this.props.toggleUploadModal}
             >
               <Close />
             </div>

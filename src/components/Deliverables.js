@@ -13,7 +13,7 @@ const Deliverable = ({
 }) =>
   <article className="dt w-100 bb b--black-05 pb2 mt2 tl">
     {deliver &&
-      <Upload closeUploadModal={this.toggleUploadModal} clientEmail={from} />}
+      <Upload toggleUploadModal={toggleUploadModal} clientEmail={from} />}
     <div className="dtc w2 w3-ns v-mid">
       {ready
         ? <span className="br-100 bg-yellow h2 w2 db" />

@@ -9,9 +9,9 @@ const Upload = () => {
       viewBox="0 0 24 24"
       fill="none"
       stroke="#000"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
       <path d="M3 17v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3" />
       <polyline points="16 6 12 2 8 6" />

@@ -1,4 +1,4 @@
-import { firebaseAuth, ref, auth } from '../constants/firebase.js'
+import { firebaseAuth, ref } from '../constants/firebase.js'
 
 export function createNewTask(deliverable, client, deadline) {
   ref
@@ -7,9 +7,14 @@ export function createNewTask(deliverable, client, deadline) {
     .catch(error => console.error(error))
 }
 
-export function uploadDeliverable(file, url, timestamp, email) {
+export function uploadDeliverable(
+  file = null,
+  url = null,
+  email,
+  time = new Date()
+) {
   ref
-    .child(`users/${auth.currentUser.uid}/delivered`)
-    .push({ file, url, timestamp, email })
+    .child(`users/${firebaseAuth().currentUser.uid}/delivered`)
+    .push({ file, url, email, time })
     .catch(error => console.error(error))
 }

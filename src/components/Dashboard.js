@@ -6,24 +6,13 @@ import { firebaseAuth, ref } from '../constants/firebase.js'
 
 export default class Dashboard extends Component {
   state = {
-    ThingsYouWillGet: [
-      1,
-      2,
-      3,
-      {
-        title: 'thingy',
-        from: 'josh',
-        due: 'tomorrow',
-        link: 'http://localhost:3000/dashboard',
-        ready: true
-      }
-    ],
     add: false,
     deliver: false
   }
 
   componentDidMount() {
     this.getTasksINeedToDo()
+    this.getTasksIWillBeGiven()
   }
 
   toggleAddModal = () => {
@@ -40,16 +29,24 @@ export default class Dashboard extends Component {
       .on('value', snap => this.setState({ thingsYouNeedToDo: snap.val() }))
   }
 
+  getTasksIWillBeGiven = () => {
+    ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/beGiven`)
+      .on('value', snap => this.setState({ ThingsYouWillGet: snap.val() }))
+  }
+
   render() {
-    const ThingsYouWillGet = this.state.ThingsYouWillGet.map((item, index) =>
-      <Deliverable
-        key={index}
-        ready={item.ready}
-        title={item.title}
-        from={item.from}
-        due={item.due}
-      />
-    )
+    const ThingsYouWillGet =
+      this.state.ThingsYouWillGet &&
+      Object.keys(this.state.ThingsYouWillGet).map((item, index) =>
+        <Deliverable
+          key={index}
+          ready={this.state.ThingsYouWillGet[item].ready}
+          title={this.state.ThingsYouWillGet[item].title}
+          from={this.state.ThingsYouWillGet[item].from}
+          due={this.state.ThingsYouWillGet[item].due}
+        />
+      )
 
     const ThingsYouNeedToDo =
       this.state.thingsYouNeedToDo &&
