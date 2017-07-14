@@ -58,6 +58,7 @@ describe('Delivering on a Task', () => {
   })
 
   // test that user account gets created from email in task
+  // test that a user can deliver a file and that teh recipeint gets it
 })
 
 // make sure you delete user at the end
