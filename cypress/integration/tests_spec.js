@@ -1,4 +1,4 @@
-const username = 'testsddsdsassdaf@test.com'
+const username = 'test@test.com'
 
 describe('The Home Page', () => {
   it('successfully loads', () => {
@@ -38,6 +38,23 @@ describe('Creating a New Task', () => {
     cy.contains('something something')
   })
 
+  // test a specific date
+})
+
+describe('Delivering on a Task', () => {
+  beforeEach(() => {
+    cy.visit('/login')
+    cy.get('input[name=email-address]').type(username)
+    cy.get('input[name=password]').type(`test123{enter}`)
+  })
+
+  it('upload and submit an image', () => {
+    // cy.contains('Add a New Thing').click()
+    // cy.get('input[name=deliverable]').type(`something something`)
+    // cy.get('input[placeholder=someone]').type(`something@something.com`)
+    // cy.get('input[type=submit]').click()
+    // cy.contains('something something')
+  })
   // test specific date
 })
 
