@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Deliverable from './Deliverables.js'
 import Add from './Add'
+import Upload from './Upload'
 import { firebaseAuth, ref } from '../constants/firebase.js'
 
 export default class Dashboard extends Component {
@@ -17,7 +18,8 @@ export default class Dashboard extends Component {
         ready: true
       }
     ],
-    add: false
+    add: false,
+    deliver: false
   }
 
   componentDidMount() {
@@ -26,6 +28,10 @@ export default class Dashboard extends Component {
 
   toggleAddModal = () => {
     this.setState({ add: !this.state.add })
+  }
+
+  toggleUploadModal = () => {
+    this.setState({ deliver: !this.state.deliver })
   }
 
   getTasksINeedToDo = () => {
@@ -55,11 +61,15 @@ export default class Dashboard extends Component {
           title={this.state.thingsYouNeedToDo[item].deliverable}
           from={this.state.thingsYouNeedToDo[item].client}
           due={this.state.thingsYouNeedToDo[item].deadline}
+          toggleUploadModal={this.toggleUploadModal}
+          deliver={this.state.deliver}
         />
       )
     return (
       <div className="mw6 center tc">
         {this.state.add && <Add closeAddModal={this.toggleAddModal} />}
+        {/* {this.state.deliver &&
+        <Upload closeUploadModal={this.toggleUploadModal} />} */}
         <p className="f4 tc mv3 b">PEOPLE</p>
         <div className="pv3">
           {ThingsYouWillGet}
