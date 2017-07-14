@@ -31,11 +31,11 @@ describe('Creating a New Task', () => {
   })
 
   it('creates a new task', () => {
-    cy.contains('Add a New Thing').click()
+    cy.contains('Promise To Do Something').click()
     cy.get('input[name=deliverable]').type(`something something`)
-    cy.get('input[placeholder=someone]').type(`something@something.com`)
+    cy.get('input[type=email]').type(`test@two.com`)
     cy.get('input[type=submit]').click()
-    cy.contains('Promise To Do Something')
+    cy.contains('something something')
   })
 
   // test a specific date
@@ -49,7 +49,7 @@ describe('Delivering on a Task', () => {
     cy.get('input[name=password]').type(`test123{enter}`)
   })
 
-  it('upload and submit a ', () => {
+  it('upload and submit a task', () => {
     // cy.contains('Add a New Thing').click()
     // cy.get('input[name=deliverable]').type(`something something`)
     // cy.get('input[placeholder=someone]').type(`something@something.com`)
