@@ -9,11 +9,17 @@ const Deliverable = ({
   due,
   myStuff,
   toggleUploadModal,
-  deliver
+  deliver,
+  taskId,
+  file
 }) =>
   <article className="dt w-100 bb b--black-05 pb2 mt2 tl">
     {deliver &&
-      <Upload closeUploadModal={this.toggleUploadModal} clientEmail={from} />}
+      <Upload
+        toggleUploadModal={toggleUploadModal}
+        clientEmail={from}
+        taskId={taskId}
+      />}
     <div className="dtc w2 w3-ns v-mid">
       {ready
         ? <span className="br-100 bg-yellow h2 w2 db" />
@@ -25,19 +31,21 @@ const Deliverable = ({
       </h1>
       {myStuff
         ? <h2 className="f6 fw4 mt0 mb0 black-60">
-            Send this to {from || 'Someone'} by {due || 'sometime'}.
-          </h2>
+          Do this for {from || 'Someone'} by {due || 'sometime'}.
+        </h2>
         : !ready &&
-          <h2 className="f6 fw4 mt0 mb0 black-60">
-            {from || 'Someone'} will send this to you by {due || 'sometime'}.
-          </h2>}
+        <h2 className="f6 fw4 mt0 mb0 black-60">
+          {from || 'Someone'} will do this for you by {due || 'sometime'}.
+        </h2>}
     </div>
 
     <div className="dtc v-mid">
       <div className="w-100 tr">
         {ready &&
           <button className="f6 button-reset bg-white ba b--black-10 dim pointer pv1 black-60">
-            Download
+            <a href={file} download>
+              Download
+            </a>
           </button>}
         {myStuff &&
           <button

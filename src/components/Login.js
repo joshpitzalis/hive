@@ -55,18 +55,14 @@ export default class Login extends Component {
             />
           </div>
           {this.state.loginMessage &&
-            <div classNameName="alert alert-danger" role="alert">
+            <div className="alert alert-danger" role="alert">
               <span
-                classNameName="glyphicon glyphicon-exclamation-sign"
+                className="glyphicon glyphicon-exclamation-sign"
                 aria-hidden="true"
               />
-              <span classNameName="sr-only">Error:</span>
+              <span className="sr-only">Error:</span>
               &nbsp;{this.state.loginMessage}{' '}
-              <a
-                href="#"
-                onClick={this.resetPassword}
-                classNameName="alert-link"
-              >
+              <a href="#" onClick={this.resetPassword} className="alert-link">
                 Forgot Password?
               </a>
             </div>}

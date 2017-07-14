@@ -6,24 +6,13 @@ import { firebaseAuth, ref } from '../constants/firebase.js'
 
 export default class Dashboard extends Component {
   state = {
-    ThingsYouWillGet: [
-      1,
-      2,
-      3,
-      {
-        title: 'thingy',
-        from: 'josh',
-        due: 'tomorrow',
-        link: 'http://localhost:3000/dashboard',
-        ready: true
-      }
-    ],
     add: false,
     deliver: false
   }
 
   componentDidMount() {
     this.getTasksINeedToDo()
+    this.getTasksIWillBeGiven()
   }
 
   toggleAddModal = () => {
@@ -40,22 +29,32 @@ export default class Dashboard extends Component {
       .on('value', snap => this.setState({ thingsYouNeedToDo: snap.val() }))
   }
 
+  getTasksIWillBeGiven = () => {
+    ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/beGiven`)
+      .on('value', snap => this.setState({ ThingsYouWillGet: snap.val() }))
+  }
+
   render() {
-    const ThingsYouWillGet = this.state.ThingsYouWillGet.map((item, index) =>
-      <Deliverable
-        key={index}
-        ready={item.ready}
-        title={item.title}
-        from={item.from}
-        due={item.due}
-      />
-    )
+    const ThingsYouWillGet =
+      this.state.ThingsYouWillGet &&
+      Object.keys(this.state.ThingsYouWillGet).map(item =>
+        <Deliverable
+          key={this.state.ThingsYouWillGet[item].taskId}
+          ready={this.state.ThingsYouWillGet[item].ready}
+          title={this.state.ThingsYouWillGet[item].title}
+          from={this.state.ThingsYouWillGet[item].from}
+          due={this.state.ThingsYouWillGet[item].due}
+          taskId={this.state.ThingsYouWillGet[item].taskId}
+          file={this.state.ThingsYouWillGet[item].file}
+        />
+      )
 
     const ThingsYouNeedToDo =
       this.state.thingsYouNeedToDo &&
-      Object.keys(this.state.thingsYouNeedToDo).map((item, index) =>
+      Object.keys(this.state.thingsYouNeedToDo).map(item =>
         <Deliverable
-          key={index}
+          key={this.state.thingsYouNeedToDo[item].taskId}
           ready={false}
           myStuff={true}
           title={this.state.thingsYouNeedToDo[item].deliverable}
@@ -63,6 +62,7 @@ export default class Dashboard extends Component {
           due={this.state.thingsYouNeedToDo[item].deadline}
           toggleUploadModal={this.toggleUploadModal}
           deliver={this.state.deliver}
+          taskId={this.state.thingsYouNeedToDo[item].taskId}
         />
       )
     return (
@@ -70,11 +70,10 @@ export default class Dashboard extends Component {
         {this.state.add && <Add closeAddModal={this.toggleAddModal} />}
         {/* {this.state.deliver &&
         <Upload closeUploadModal={this.toggleUploadModal} />} */}
-        <p className="f4 tc mv3 b">PEOPLE</p>
         <div className="pv3">
           {ThingsYouWillGet}
         </div>
-        <p className="f4 tc mv3 b">YOU</p>
+        {ThingsYouNeedToDo && <p className="f4 tc mv3 b">Do</p>}
         <div className="pv3">
           {ThingsYouNeedToDo}
         </div>
@@ -82,7 +81,7 @@ export default class Dashboard extends Component {
           className="link dim dib f6 button-reset bg-white ba b--black-10 dim pointer pv1 black-60 mv5"
           onClick={this.toggleAddModal}
         >
-          Add a New Thing
+          Promise To Do Something
         </button>
       </div>
     )

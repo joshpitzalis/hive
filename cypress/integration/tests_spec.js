@@ -31,14 +31,15 @@ describe('Creating a New Task', () => {
   })
 
   it('creates a new task', () => {
-    cy.contains('Add a New Thing').click()
+    cy.contains('Promise To Do Something').click()
     cy.get('input[name=deliverable]').type(`something something`)
-    cy.get('input[placeholder=someone]').type(`something@something.com`)
+    cy.get('input[type=email]').type(`test@two.com`)
     cy.get('input[type=submit]').click()
     cy.contains('something something')
   })
 
   // test a specific date
+  // test with a link
 })
 
 describe('Delivering on a Task', () => {
@@ -48,14 +49,16 @@ describe('Delivering on a Task', () => {
     cy.get('input[name=password]').type(`test123{enter}`)
   })
 
-  it('upload and submit an image', () => {
+  it('upload and submit a task', () => {
     // cy.contains('Add a New Thing').click()
     // cy.get('input[name=deliverable]').type(`something something`)
     // cy.get('input[placeholder=someone]').type(`something@something.com`)
     // cy.get('input[type=submit]').click()
     // cy.contains('something something')
   })
-  // test specific date
+
+  // test that user account gets created from email in task
+  // test that a user can deliver a file and that teh recipeint gets it
 })
 
 // make sure you delete user at the end
