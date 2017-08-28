@@ -3,20 +3,21 @@ import PropTypes from 'prop-types'
 import { createNewTask } from '../helpers/database.js'
 import Close from '../styles/images/close.js'
 import { Checkbox, Label } from 'rebass'
-import { CardElement } from 'react-stripe-elements'
+import { Elements, CardElement, injectStripe } from 'react-stripe-elements'
+import { firebaseAuth, ref } from '../constants/firebase.js'
 
 export default class Add extends Component {
   static propTypes = {}
 
   state = {
-    deliverable: null,
-    client: null,
-    deadline: null,
+    deliverable: '',
+    client: '',
+    deadline: '',
     paid: false,
-    number: null,
-    cvv: null,
-    month: null,
-    year: null
+    number: '',
+    cvv: '',
+    month: '',
+    year: ''
   }
 
   handleChange = fieldName => evt => {
@@ -43,7 +44,7 @@ export default class Add extends Component {
             <div className="tr dim pointer" onClick={this.props.closeAddModal}>
               <Close />
             </div>
-            <h1>I will send</h1>
+            <h1>I will...</h1>
             <input
               type="text"
               name="deliverable"
@@ -52,7 +53,7 @@ export default class Add extends Component {
               placeholder="something I promise to do"
               value={this.state.deliverable}
             />
-            <h1>to</h1>
+            <h1>for...</h1>
             <input
               type="email"
               onChange={this.handleChange('client')}
@@ -60,7 +61,7 @@ export default class Add extends Component {
               placeholder="someone's email address"
               value={this.state.client}
             />
-            <h1>by</h1>
+            <h1>by...</h1>
             <input
               type="date"
               onChange={this.handleChange('deadline')}
@@ -77,11 +78,11 @@ export default class Add extends Component {
               />
               or I'll be charged $5 everyday that I don't.
             </Label>
-            {this.state.paid && <Checkout />}
-            <label>
-              Card details
-              <CardElement style={{ base: { fontSize: '18px' } }} />
-            </label>
+            {this.state.paid &&
+              <Elements>
+                <CardDetails />
+              </Elements>}
+
             <input
               type="submit"
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 db ma4 center"
@@ -95,48 +96,45 @@ export default class Add extends Component {
   }
 }
 
-const Checkout = ({ props }) =>
-  <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-    <legend className="ph0 mh0 fw6 clip">Add Your Payment Details</legend>
-    <div className="mt3">
-      <label className="db fw4 lh-copy f6" for="email-address">
-        Card Number
-      </label>
-      <input
-        className="pa2 input-reset ba bg-transparent w-80 measure"
-        type="number"
-        name="email-address"
-        id="email-address"
-      />
-    </div>
-    <div className="mt3">
-      <label className="db fw4 lh-copy f6" for="password">
-        CVV
-      </label>
-      <input
-        className="b pa2 input-reset ba bg-transparent"
-        type="number"
-        name="password"
-        id="password"
-      />
-    </div>
-    <div className="mt3">
-      <label className="db fw4 lh-copy f6" for="Expiry">
-        Expiry Date
-      </label>
-      <div className="tc">
-        <input
-          className="b pa2 input-reset ba bg-transparent w3"
-          type="number"
-          name="Expiry"
-          id="month"
-        />
-        <input
-          className="b pa2 input-reset ba bg-transparent w4"
-          type="number"
-          name="Expiry"
-          id="year"
-        />
-      </div>
-    </div>
-  </fieldset>
+class _CardDetails extends Component {
+  handleSubmit = ev => {
+    ev.preventDefault()
+    this.props.stripe
+      .createToken()
+      .then(({ token }) => {
+        ref
+          .child(`/users/${firebaseAuth().currentUser.uid}/sources`)
+          .update({ token })
+      })
+      .catch(reason => console.error(reason))
+  }
+
+  chargeUser = async () => {
+    const source = await ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+      .once('value')
+      .then(snap => snap.val().id)
+
+    ref.child(`/users/${firebaseAuth().currentUser.uid}/charges`).push({
+      source: source,
+      amount: 500
+    })
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit} className="mt3">
+        <CardElement style={{ base: { fontSize: '18px' } }} className="w-80" />
+        <button type="submit">Verify Card</button>
+        <button
+          className="link dim dib f6 button-reset bg-white ba b--black-10 dim pointer pv1 black-60 mv5 red"
+          onClick={this.chargeUser}
+        >
+          charge User
+        </button>
+      </form>
+    )
+  }
+}
+
+const CardDetails = injectStripe(_CardDetails)

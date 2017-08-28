@@ -105,45 +105,70 @@ exports.createStripeCustomer = functions.auth.user().onCreate(event => {
     .then(customer => {
       return admin
         .database()
-        .ref(`/stripe_customers/${data.uid}/customer_id`)
+        .ref(`/users/${data.uid}/info/customer_id`)
         .set(customer.id)
     })
 })
 
 // Add a payment source (card) for a user by writing a stripe payment source token to Realtime database
 exports.addPaymentSource = functions.database
-  .ref('/stripe_customers/{userId}/sources/{pushId}/token')
+  .ref('/users/{userId}/sources/token/id')
   .onWrite(event => {
     const source = event.data.val()
+
     if (source === null) return null
     return admin
       .database()
-      .ref(`/stripe_customers/${event.params.userId}/customer_id`)
+      .ref(`/users/${event.params.userId}/info/customer_id`)
       .once('value')
       .then(snapshot => {
         return snapshot.val()
       })
       .then(customer => {
+        console.log('source', source)
+        console.log('customer', customer)
         return stripe.customers.createSource(customer, { source })
       })
-      .then(
-        response => {
-          return event.data.adminRef.parent.set(response)
-        },
-        error => {
-          return event.data.adminRef.parent
-            .child('error')
-            .set(userFacingMessage(error))
-            .then(() => {
-              return reportError(error, { user: event.params.userId })
-            })
-        }
-      )
+      .catch(error => {
+        console.log(error)
+      })
   })
 
+//
+// Add a payment source (card) for a user by writing a stripe payment source token to Realtime database
+// exports.addPaymentSource = functions.database
+//   .ref('/users/{userId}/sources/{pushId}')
+//   .onWrite(event => {
+//     const source = event.data.val()
+//     if (source === null) return null
+//     return admin
+//       .database()
+//       .ref(`/users/${event.params.userId}/info/customer_id`)
+//       .once('value')
+//       .then(snapshot => {
+//         return snapshot.val()
+//       })
+//       .then(customer => {
+//         return stripe.customers.createSource(customer, { source })
+//       })
+//       .then(
+//         response => {
+//           return event.data.adminRef.parent.set(response)
+//         },
+//         error => {
+//           return event.data.adminRef.parent
+//             .child('error')
+//             .set(userFacingMessage(error))
+//             .then(() => {
+//               return reportError(error, { user: event.params.userId })
+//             })
+//         }
+//       )
+//   })
+//
 // Charge the Stripe customer whenever an amount is written to the Realtime database
 exports.createStripeCharge = functions.database
-  .ref('/stripe_customers/{userId}/charges/{id}')
+  .ref('/users/{userId}/charges/{id}')
   .onWrite(event => {
     const val = event.data.val()
     // This onWrite will trigger whenever anything is written to the path, so
@@ -152,12 +177,14 @@ exports.createStripeCharge = functions.database
     // Look up the Stripe customer id written in createStripeCustomer
     return admin
       .database()
-      .ref(`/stripe_customers/${event.params.userId}/customer_id`)
+      .ref(`/users/${event.params.userId}/info/customer_id`)
       .once('value')
       .then(snapshot => {
         return snapshot.val()
       })
       .then(customer => {
+        console.log('val', val)
+        console.log('customer', customer)
         // Create a charge using the pushId as the idempotency key, protecting against double charges
         const amount = val.amount
         const idempotency_key = event.params.id
@@ -172,81 +199,81 @@ exports.createStripeCharge = functions.database
         },
         error => {
           // We want to capture errors and render them in a user-friendly way, while
-          // still logging an exception with Stackdriver
-          return event.data.adminRef
-            .child('error')
-            .set(userFacingMessage(error))
-            .then(() => {
-              return reportError(error, { user: event.params.userId })
-            })
+
+          // return event.data.adminRef
+          //   .child('error')
+          //   .set(userFacingMessage(error))
+          //   .then(() => {
+          console.log(error, { user: event.params.userId })
+          // })
         }
       )
   })
 
 // When a user deletes their account, clean up after them
-exports.cleanupUser = functions.auth.user().onDelete(event => {
-  return admin
-    .database()
-    .ref(`/stripe_customers/${event.data.uid}`)
-    .once('value')
-    .then(snapshot => {
-      return snapshot.val()
-    })
-    .then(customer => {
-      return stripe.customers.del(customer)
-    })
-    .then(() => {
-      return admin
-        .database()
-        .ref(`/stripe_customers/${event.data.uid}`)
-        .remove()
-    })
-})
+// exports.cleanupUser = functions.auth.user().onDelete(event => {
+//   return admin
+//     .database()
+//     .ref(`/users/${event.data.uid}/info`)
+//     .once('value')
+//     .then(snapshot => {
+//       return snapshot.val()
+//     })
+//     .then(customer => {
+//       return stripe.customers.del(customer)
+//     })
+//     .then(() => {
+//       return admin
+//         .database()
+//         .ref(`/stripe_customers/${event.data.uid}`)
+//         .remove()
+//     })
+// })
 
 // To keep on top of errors, we should raise a verbose error report with Stackdriver rather
 // than simply relying on console.error. This will calculate users affected + send you email
 // alerts, if you've opted into receiving them.
 // [START reporterror]
-function reportError(err, context = {}) {
-  // This is the name of the StackDriver log stream that will receive the log
-  // entry. This name can be any valid log stream name, but must contain "err"
-  // in order for the error to be picked up by StackDriver Error Reporting.
-  const logName = 'errors'
-  const log = logging.log(logName)
-
-  // https://cloud.google.com/logging/docs/api/ref_v2beta1/rest/v2beta1/MonitoredResource
-  const metadata = {
-    resource: {
-      type: 'cloud_function',
-      labels: { function_name: process.env.FUNCTION_NAME }
-    }
-  }
-
-  // https://cloud.google.com/error-reporting/reference/rest/v1beta1/ErrorEvent
-  const errorEvent = {
-    message: err.stack,
-    serviceContext: {
-      service: process.env.FUNCTION_NAME,
-      resourceType: 'cloud_function'
-    },
-    context: context
-  }
-
-  // Write the error log entry
-  return new Promise((resolve, reject) => {
-    log.write(log.entry(metadata, errorEvent), error => {
-      if (error) {
-        reject(error)
-      }
-      resolve()
-    })
-  })
-}
-// [END reporterror]
-
-// Sanitize the error message for the user
-function userFacingMessage(error) {
-  return error.type
-    ? error.message
-    : 'An error occurred, developers have been alerted'
-}
+// function reportError(err, context = {}) {
+//   // This is the name of the StackDriver log stream that will receive the log
+//   // entry. This name can be any valid log stream name, but must contain "err"
+//   // in order for the error to be picked up by StackDriver Error Reporting.
+//   const logName = 'errors'
+//   const log = logging.log(logName)
+//
+//   // https://cloud.google.com/logging/docs/api/ref_v2beta1/rest/v2beta1/MonitoredResource
+//   const metadata = {
+//     resource: {
+//       type: 'cloud_function',
+//       labels: { function_name: process.env.FUNCTION_NAME }
+//     }
+//   }
+//
+//   // https://cloud.google.com/error-reporting/reference/rest/v1beta1/ErrorEvent
+//   const errorEvent = {
+//     message: err.stack,
+//     serviceContext: {
+//       service: process.env.FUNCTION_NAME,
+//       resourceType: 'cloud_function'
+//     },
+//     context: context
+//   }
+//
+//   // Write the error log entry
+//   return new Promise((resolve, reject) => {
+//     log.write(log.entry(metadata, errorEvent), error => {
+//       if (error) {
+//         reject(error)
+//       }
+//       resolve()
+//     })
+//   })
+// }
+// // [END reporterror]
+//
+// // Sanitize the error message for the user
+// function userFacingMessage(error) {
+//   return error.type
+//     ? error.message
+//     : 'An error occurred, developers have been alerted'
+// }
