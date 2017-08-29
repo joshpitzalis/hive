@@ -17,7 +17,15 @@ export default class Add extends Component {
     number: '',
     cvv: '',
     month: '',
-    year: ''
+    year: '',
+    hasCard: false
+  }
+
+  componentDidMount() {
+    const source = ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+      .once('value')
+      .then(snap => this.setState({ hasCard: true }))
   }
 
   handleChange = fieldName => evt => {
@@ -84,6 +92,7 @@ export default class Add extends Component {
               or I'll be charged $5 everyday that I don't.
             </Label>
             {this.state.paid &&
+              !this.state.hasCard &&
               <Elements>
                 <CardDetails />
               </Elements>}
@@ -114,29 +123,23 @@ class _CardDetails extends Component {
       .catch(reason => console.error(reason))
   }
 
-  chargeUser = async () => {
-    const source = await ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
-      .once('value')
-      .then(snap => snap.val().id)
-
-    ref.child(`/users/${firebaseAuth().currentUser.uid}/charges`).push({
-      source: source,
-      amount: 500
-    })
-  }
+  // chargeUser = async () => {
+  //   const source = await ref
+  //     .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+  //     .once('value')
+  //     .then(snap => snap.val().id)
+  //
+  //   ref.child(`/users/${firebaseAuth().currentUser.uid}/charges`).push({
+  //     source: source,
+  //     amount: 500
+  //   })
+  // }
 
   render() {
     return (
       <form onSubmit={this.handleSubmit} className="mt3">
         <CardElement style={{ base: { fontSize: '18px' } }} className="w-80" />
         <button type="submit">Verify Card</button>
-        <button
-          className="link dim dib f6 button-reset bg-white ba b--black-10 dim pointer pv1 black-60 mv5 red"
-          onClick={this.chargeUser}
-        >
-          charge User
-        </button>
       </form>
     )
   }
