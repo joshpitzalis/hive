@@ -4,6 +4,7 @@
   "dependencies": {
     "firebase-admin": "~4.2.1",
     "firebase-functions": "^0.5.7",
+    "nodemailer": "^4.1.0",
     "stripe": "^4.23.1"
   },
   "private": true

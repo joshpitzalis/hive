@@ -134,38 +134,6 @@ exports.addPaymentSource = functions.database
       })
   })
 
-//
-// Add a payment source (card) for a user by writing a stripe payment source token to Realtime database
-// exports.addPaymentSource = functions.database
-//   .ref('/users/{userId}/sources/{pushId}')
-//   .onWrite(event => {
-//     const source = event.data.val()
-//     if (source === null) return null
-//     return admin
-//       .database()
-//       .ref(`/users/${event.params.userId}/info/customer_id`)
-//       .once('value')
-//       .then(snapshot => {
-//         return snapshot.val()
-//       })
-//       .then(customer => {
-//         return stripe.customers.createSource(customer, { source })
-//       })
-//       .then(
-//         response => {
-//           return event.data.adminRef.parent.set(response)
-//         },
-//         error => {
-//           return event.data.adminRef.parent
-//             .child('error')
-//             .set(userFacingMessage(error))
-//             .then(() => {
-//               return reportError(error, { user: event.params.userId })
-//             })
-//         }
-//       )
-//   })
-//
 // Charge the Stripe customer whenever an amount is written to the Realtime database
 exports.createStripeCharge = functions.database
   .ref('/users/{userId}/charges/{id}')
@@ -198,14 +166,7 @@ exports.createStripeCharge = functions.database
           return event.data.adminRef.set(response)
         },
         error => {
-          // We want to capture errors and render them in a user-friendly way, while
-
-          // return event.data.adminRef
-          //   .child('error')
-          //   .set(userFacingMessage(error))
-          //   .then(() => {
           console.log(error, { user: event.params.userId })
-          // })
         }
       )
   })
@@ -230,50 +191,99 @@ exports.createStripeCharge = functions.database
 //     })
 // })
 
-// To keep on top of errors, we should raise a verbose error report with Stackdriver rather
-// than simply relying on console.error. This will calculate users affected + send you email
-// alerts, if you've opted into receiving them.
-// [START reporterror]
-// function reportError(err, context = {}) {
-//   // This is the name of the StackDriver log stream that will receive the log
-//   // entry. This name can be any valid log stream name, but must contain "err"
-//   // in order for the error to be picked up by StackDriver Error Reporting.
-//   const logName = 'errors'
-//   const log = logging.log(logName)
-//
-//   // https://cloud.google.com/logging/docs/api/ref_v2beta1/rest/v2beta1/MonitoredResource
-//   const metadata = {
-//     resource: {
-//       type: 'cloud_function',
-//       labels: { function_name: process.env.FUNCTION_NAME }
-//     }
+// const nodemailer = require('nodemailer')
+// const mailTransport = nodemailer.createTransport({
+//   host: 'smtp.gmail.com',
+//   port: 465,
+//   secure: true,
+//   auth: {
+//     user: 'joshpitzalis@gmail.com',
+//     pass: 'Super451'
 //   }
+// })
+
+// exports.weeklyEmail = functions.https.onRequest((req, res) => {
+//   const currentTime = new Date().getTime()
+//   const lastWeek = currentTime - 604800000
+//   // 604800000 is one week
+//   const emails = []
 //
-//   // https://cloud.google.com/error-reporting/reference/rest/v1beta1/ErrorEvent
-//   const errorEvent = {
-//     message: err.stack,
-//     serviceContext: {
-//       service: process.env.FUNCTION_NAME,
-//       resourceType: 'cloud_function'
-//     },
-//     context: context
-//   }
-//
-//   // Write the error log entry
-//   return new Promise((resolve, reject) => {
-//     log.write(log.entry(metadata, errorEvent), error => {
-//       if (error) {
-//         reject(error)
-//       }
-//       resolve()
+//   admin
+//     .database()
+//     .ref()
+//     .child('users')
+//     .orderByChild('created')
+//     .startAt(lastWeek)
+//     .once('value')
+//     .then(snap => {
+//       snap.forEach(child => {
+//         const email = child.val().email
+//         emails.push(email)
+//       })
+//       return emails
 //     })
-//   })
-// }
-// // [END reporterror]
-//
-// // Sanitize the error message for the user
-// function userFacingMessage(error) {
-//   return error.type
-//     ? error.message
-//     : 'An error occurred, developers have been alerted'
-// }
+//     .then(emails => {
+//       const mailOptions = {
+//         from: `"Hive" <joshpitzalis@gmail.com>`,
+//         bcc: emails.join(),
+//         subject: 'Thanks for Trying Hive.',
+//         text: `I'd love to know how it has been using Hive over the last week. Any serious bugs that I should know of? Or features that you would like added?`
+//       }
+//       return mailTransport
+//         .sendMail(mailOptions)
+//         .then(() => {
+//           res.send('Email sent')
+//         })
+//         .catch(error => res.send(error))
+//     })
+// })
+
+exports.dailyCharge = functions.https.onRequest((req, res) => {
+  const users = []
+  let today = new Date().toISOString()
+
+  admin
+    .database()
+    .ref()
+    .child('activeTasks')
+    .orderByChild('deadline')
+    .endAt(today)
+    .once('value')
+    .then(activeTasks => {
+      activeTasks.forEach(task => {
+        const user = task.val().userId
+        const card = task.val().cardId
+        users.push({ userId: user, cardId: card })
+      })
+      return users
+    })
+    .then(users =>
+      users.map(user => {
+        if (user.cardId) {
+          admin.database().ref(`/users/${user.userId}/charges`).push({
+            source: user.cardId,
+            amount: 500
+          })
+        }
+      })
+    )
+
+  // write a charge to /users/{userId}/charges/{id}
+
+  // a charge is amount, source: cardId
+
+  // .then(emails => {
+  //   const mailOptions = {
+  //     from: `"Hive" <joshpitzalis@gmail.com>`,
+  //     bcc: emails.join(),
+  //     subject: 'Thanks for Trying Hive.',
+  //     text: `I'd love to know how it has been using Hive over the last week. Any serious bugs that I should know of? Or features that you would like added?`
+  //   }
+  //   return mailTransport
+  //     .sendMail(mailOptions)
+  //     .then(() => {
+  //       res.send('Email sent')
+  //     })
+  //     .catch(error => res.send(error))
+  // })
+})

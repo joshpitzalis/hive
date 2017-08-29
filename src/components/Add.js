@@ -26,12 +26,17 @@ export default class Add extends Component {
     })
   }
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
+    const source = await ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+      .once('value')
+      .then(snap => snap.val().id)
     createNewTask(
       this.state.deliverable,
       this.state.client,
       this.state.deadline,
-      Date.now()
+      Date.now(),
+      source
     )
     this.props.closeAddModal()
   }

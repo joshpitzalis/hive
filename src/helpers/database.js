@@ -1,6 +1,6 @@
 import { firebaseAuth, ref } from '../constants/firebase.js'
 
-export function createNewTask(deliverable, client, deadline, taskId) {
+export function createNewTask(deliverable, client, deadline, taskId, cardId) {
   const newTaskKey = ref
     .child(`users/${firebaseAuth().currentUser.uid}/tasks`)
     .push().key
@@ -15,6 +15,20 @@ export function createNewTask(deliverable, client, deadline, taskId) {
       taskId: newTaskKey,
       from: firebaseAuth().currentUser.email,
       ready: false
+    })
+    .catch(error => console.error(error))
+  ref
+    .child(`activeTasks/${newTaskKey}`)
+    .update({
+      deliverable,
+      client,
+      deadline,
+      createdAt: Date.now(),
+      taskId: newTaskKey,
+      from: firebaseAuth().currentUser.email,
+      ready: false,
+      userId: firebaseAuth().currentUser.uid,
+      cardId
     })
     .catch(error => console.error(error))
 }
