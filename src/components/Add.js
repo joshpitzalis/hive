@@ -34,11 +34,12 @@ export default class Add extends Component {
     })
   }
 
-  handleSubmit = async () => {
-    const source = await ref
+  handleSubmit = () => {
+    const source = ref
       .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
       .once('value')
       .then(snap => snap.val().id)
+
     createNewTask(
       this.state.deliverable,
       this.state.client,
@@ -101,6 +102,7 @@ export default class Add extends Component {
               type="submit"
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 db ma4 center"
               onClick={this.handleSubmit}
+              data-test="createTask"
             />
             <div id="card-errors" role="alert" />
           </div>
