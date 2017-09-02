@@ -44,6 +44,10 @@ export function uploadDeliverable(
     .child(taskId)
     .update({ file, url, timeDelivered, ready: true })
     .catch(error => console.error(error))
+  ref
+    .child(`activeTasks/${taskId}`)
+    .remove()
+    .catch(error => console.error(error))
 }
 
 // export function submitNewCreditCard(

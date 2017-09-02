@@ -35,6 +35,22 @@ export default class Dashboard extends Component {
       .on('value', snap => this.setState({ ThingsYouWillGet: snap.val() }))
   }
 
+  handleArchive = async taskId => {
+    const task = await ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/beGiven/${taskId}`)
+      .once('value')
+      .then(snap => snap.val())
+      .catch(error => console.error(error))
+    ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/beGiven/${taskId}`)
+      .remove()
+      .catch(error => console.error(error))
+    ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/archived`)
+      .push(task)
+      .catch(error => console.error(error))
+  }
+
   render() {
     const ThingsYouWillGet =
       this.state.ThingsYouWillGet &&
@@ -47,6 +63,8 @@ export default class Dashboard extends Component {
           due={this.state.ThingsYouWillGet[item].due}
           taskId={this.state.ThingsYouWillGet[item].taskId}
           file={this.state.ThingsYouWillGet[item].file}
+          url={this.state.ThingsYouWillGet[item].url}
+          handleArchive={this.handleArchive}
         />
       )
 
