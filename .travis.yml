@@ -1,12 +1,19 @@
 language: node_js
 node_js:
-  - 6
+- 6
 install:
-  - npm install
-  - npm install -g cypress-cli
+- npm install
+- npm install -g cypress-cli
 before_script:
-  - npm start -- --silent &
+- npm start -- --silent &
 script:
-  - cypress run --record
+- cypress run --record
 notifications:
   email: false
+cache:
+  yarn: true
+  directories:
+  - node_modules
+env:
+  global:
+    secure: YuI1sxyhw6Y28ZeQPrRIXGe2S8Dxgr3wENQt8amXRcIq353VvcJSM1saFa+fioFG7jr9d18jcD2VtbjJs7Ym9OxAwkRlQNcPwe2RK6W1P+cX416IViWDcm2GCKKNxcA2tC4brnheVMu+ysC/xKa7TjqZ+LyuORLMwDAAztqGLAHjhD0CNkoFPLMwHoosF82nRTvnM0SKJYtAv5Q6ZCtgO5OrM6vruA09kXjXXeNWQQ/iED4yO871r8vgT2h0+ICYOBxAIGj+f7iyv/BMWnFma6Msxs2NDF3fmh4uI9CSI8QChQ2JGvEAIJdXhO1aKMqZDy/PZxTOS07OT527OcYMxp/0z/6UEAd9hzQ1MFJQQwRKfXHd8FolFL51mFcwsX4ktkp2JBqaA0QbRIXRQ4OoACLmMjc7R5QQlTQqmtMNvfieAVqEBLBSltVoHlOUFee58BxLzUOtv0TcwfhZ64OY+bhZSp13KRi+sf5cszaIygCDWf4P7AQH+S80vbCxKuxRoxDgpgyf91mIHOwfXddIBKZvmcV8T4sIYNbjc65TaWTLybq78bB6GzHiDbFuNhUul9mb5M1SOHeRMqwo5tl5WTVxjlu081ATfMBgWNqtQi7cp+lWq/B9BG+vdlpJeRELkLpbmHejaFUbcfLu1xKbmVnftYH3/tOLfNfQtF6eQ0E=

@@ -34,7 +34,9 @@ describe('Creating a New Task', () => {
     cy.contains('Promise To Do Something').click()
     cy.get('input[name=deliverable]').type(`something something`)
     cy.get('input[type=email]').type(`test@two.com`)
-    cy.get('input[type=submit]').click()
+    cy.get(`[data-test="createTask"]`).click()
+    // why doesn't click redirect
+    // cy.visit(`http://localhost:3000/dashboard`)
     cy.contains('something something')
   })
 
