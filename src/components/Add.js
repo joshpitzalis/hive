@@ -5,6 +5,7 @@ import Close from '../styles/images/close.js'
 import { Checkbox, Label } from 'rebass'
 import { Elements, CardElement, injectStripe } from 'react-stripe-elements'
 import { firebaseAuth, ref } from '../constants/firebase.js'
+import { TextField, ButtonGroup, Button, FormLayout } from '@shopify/polaris'
 
 export default class Add extends Component {
   static propTypes = {}
@@ -28,24 +29,23 @@ export default class Add extends Component {
       .then(snap => this.setState({ hasCard: true }))
   }
 
-  handleChange = fieldName => evt => {
-    this.setState({
-      [fieldName]: evt.target.value
-    })
-  }
+  handleEmailChange = e => this.setState({ client: e })
+  handleDeliverableChange = e => this.setState({ deliverable: e })
+  handleDeadlineChange = e => this.setState({ deadline: e })
 
   handleSubmit = () => {
-    const source = ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
-      .once('value')
-      .then(snap => snap.val().id)
+    // const source = ref
+    //   .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+    //   .once('value')
+    //   .then(snap => snap.val().id)
 
     createNewTask(
       this.state.deliverable,
       this.state.client,
       this.state.deadline,
       Date.now(),
-      source
+      null
+      // source
     )
     this.props.closeAddModal()
   }
@@ -54,57 +54,40 @@ export default class Add extends Component {
     return (
       <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
         <div className="flex mxc cxc w-100 h-100">
-          <div className="bg-white pa3 w5 w-40-ns h-75 overflow-y-auto">
-            <div className="tr dim pointer" onClick={this.props.closeAddModal}>
-              <Close />
-            </div>
-            <h1>I will...</h1>
-            <input
-              type="text"
-              name="deliverable"
-              onChange={this.handleChange('deliverable')}
-              className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-80"
-              placeholder="something I promise to do"
-              value={this.state.deliverable}
-            />
-            <h1>for...</h1>
-            <input
-              type="email"
-              onChange={this.handleChange('client')}
-              className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-80"
-              placeholder="someone's email address"
-              value={this.state.client}
-            />
-            <h1>by...</h1>
-            <input
-              type="date"
-              onChange={this.handleChange('deadline')}
-              className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-80"
-              value={this.state.deadline}
-            />
-
-            <Label className="mt4 pa2 w-80 center">
-              <Checkbox
-                type="checkbox"
-                name="paid"
-                value={this.state.paid}
-                onChange={() => this.setState({ paid: !this.state.paid })}
+          <div className="bg-white pa3 w5 w-40-ns br3">
+            <FormLayout>
+              <TextField
+                label="Ask"
+                type="email"
+                onChange={this.handleEmailChange}
+                placeholder="Someone's Email Address"
+                value={this.state.client}
               />
-              or I'll be charged $5 everyday that I don't.
-            </Label>
-            {this.state.paid &&
-              !this.state.hasCard &&
-              <Elements>
-                <CardDetails />
-              </Elements>}
 
-            <input
-              type="submit"
-              className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 db ma4 center"
-              onClick={this.handleSubmit}
-              data-test="createTask"
-            />
-            <div id="card-errors" role="alert" />
+              <TextField
+                label="For"
+                type="text"
+                onChange={this.handleDeliverableChange}
+                // onChange={this.handleChange('deliverable')}
+                placeholder="What You want"
+                value={this.state.deliverable}
+              />
+
+              <TextField
+                label="By"
+                type="date"
+                onChange={this.handleDeadlineChange}
+                // onChange={this.handleChange('deadline')}
+                value={this.state.deadline}
+              />
+
+              <ButtonGroup>
+                <Button onClick={this.props.closeAddModal}>Cancel</Button>
+                <Button primary onClick={this.handleSubmit}>
+                  Send Realsie
+                </Button>
+              </ButtonGroup>
+            </FormLayout>
           </div>
         </div>
       </div>

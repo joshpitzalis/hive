@@ -54,7 +54,7 @@ export default class Login extends Component {
               ref={pw => (this.pw = pw)}
             />
           </div>
-          {this.state.loginMessage &&
+          {this.state.loginMessage && (
             <div className="alert alert-danger" role="alert">
               <span
                 className="glyphicon glyphicon-exclamation-sign"
@@ -65,18 +65,20 @@ export default class Login extends Component {
               <a href="#" onClick={this.resetPassword} className="alert-link">
                 Forgot Password?
               </a>
-            </div>}
+            </div>
+          )}
         </fieldset>
         <div className="">
           <input
             className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
             type="submit"
-            value="Sign in"
+            value="Log in"
+            data-test="loginButton"
           />
         </div>
         <div className="lh-copy mt3">
           <Link to="/register" href="#0" className="f6 link dim black db">
-            Sign up
+            Sign Up
           </Link>
           <a
             href="#0"
