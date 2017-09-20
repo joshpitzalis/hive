@@ -1,22 +1,64 @@
 import { firebaseAuth, ref } from '../constants/firebase.js'
 
-export function createNewTask(deliverable, client, deadline, taskId, cardId) {
+export const acceptChallenge = (taskId, title, client, due, created) => {
+  const taskData = {
+    title,
+    client,
+    due,
+    taskId,
+    created
+  }
+
+  console.log('taskData', taskData)
+  // add to active (user + general)
+
+  // ref
+  //   .child(`users/${firebaseAuth().currentUser.uid}/deliverable/${taskId}`)
+  //   .update(taskData)
+  //   .catch(error => console.error(error))
+
+  // remove from pending (user + general)
+  // them
+}
+
+export const declineChallenge = taskId => {
+  ref
+    .child(`users/${firebaseAuth().currentUser.uid}/pending/${taskId}`)
+    .remove()
+    .catch(error => console.error(error))
+
+  // cloud function 'challengeDeclined' will then change status to declined for sender, to avoid passing uids around in the client
+}
+
+export function createNewTask(deliverable, client, deadline) {
+  // create a unique id for the task
   const newTaskKey = ref
     .child(`users/${firebaseAuth().currentUser.uid}/sent`)
     .push().key
 
+  // create the new task data
+  const newTask = {
+    deliverable,
+    client,
+    deadline,
+    createdAt: Date.now(),
+    taskId: newTaskKey,
+    from: firebaseAuth().currentUser.email,
+    declined: false
+  }
+
+  // store task with user
   ref
     .child(`users/${firebaseAuth().currentUser.uid}/sent/${newTaskKey}`)
-    .update({
-      deliverable,
-      client,
-      deadline,
-      createdAt: Date.now(),
-      taskId: newTaskKey,
-      from: firebaseAuth().currentUser.email,
-      ready: false
-    })
+    .update(newTask)
     .catch(error => console.error(error))
+
+  // store tasks in a list of pending tasks
+  ref
+    .child(`pendingTasks/${newTaskKey}`)
+    .update(newTask)
+    .catch(error => console.error(error))
+
   // ref
   //   .child(`activeTasks/${newTaskKey}`)
   //   .update({

@@ -51,23 +51,37 @@ describe('Recieving a New Task', () => {
   beforeEach(() => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(`something@something.com`)
-    cy.get('input[name=password]').type(`changeme`)
-    cy.get('[data-test="loginButton"]').click()
+    cy
+      .get('input[name=password]')
+      .type(`changeme`)
+      .then({ timeout: 8000 }, () => {
+        // you need to wait a little while for cloud functions to create the user
+        cy.get('[data-test="loginButton"]').click()
+      })
   })
 
   it('recieved a new task', () => {
     cy.url().should('include', '/dashboard')
     cy.contains('something something')
   })
+})
 
-  // test a specific date
-  // test with a link
+describe('Accepting a Pending Task', () => {
+  beforeEach(() => {
+    cy.visit('/login')
+    cy.get('input[name=email-address]').type(`something@something.com`)
+    cy.get('input[name=password]').type(`changeme`)
+    cy.get('[data-test="loginButton"]').click()
+  })
 
-  it('deletes a user account', () => {
-    cy.visit('/settings')
-    cy.url().should('include', '/settings')
-    cy.get('[data-test="deleteUser"]').click()
-    cy.url().should('include', '/login')
+  it('accepts a pending task', () => {
+    cy.url().should('include', '/dashboard')
+    cy.contains('something hey')
+  })
+
+  it('rejects a pending task', () => {
+    cy.url().should('include', '/dashboard')
+    cy.contains('something hey')
   })
 })
 
@@ -92,11 +106,27 @@ describe('Recieving a New Task', () => {
 // })
 
 // make sure you delete user at the end
-describe('Delete User Account', () => {
+describe('Delete test User Accounts', () => {
   it('deletes a user account', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(username)
     cy.get('input[name=password]').type(`test123`)
+    cy
+      .get('[data-test="loginButton"]')
+      .click()
+      .then({ timeout: 8000 }, () => {
+        cy.url().should('include', '/dashboard')
+      })
+    cy.visit('/settings')
+    cy.url().should('include', '/settings')
+    cy.get('[data-test="deleteUser"]').click()
+    cy.url().should('include', '/login')
+  })
+
+  it('deletes a user account', () => {
+    cy.visit('/login')
+    cy.get('input[name=email-address]').type(`something@something.com`)
+    cy.get('input[name=password]').type(`changeme`)
     cy
       .get('[data-test="loginButton"]')
       .click()

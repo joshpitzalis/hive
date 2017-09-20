@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { createNewTask } from '../helpers/database.js'
-import Close from '../styles/images/close.js'
+import { createNewTask } from '../../helpers/crud.js'
+import Close from '../../styles/images/close.js'
 import { Checkbox, Label } from 'rebass'
 import { Elements, CardElement, injectStripe } from 'react-stripe-elements'
-import { firebaseAuth, ref } from '../constants/firebase.js'
+import { firebaseAuth, ref } from '../../constants/firebase.js'
 import { TextField, ButtonGroup, Button, FormLayout } from '@shopify/polaris'
 
 export default class Add extends Component {

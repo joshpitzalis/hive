@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { uploadDeliverable } from '../helpers/database.js'
-import Close from '../styles/images/close.js'
+import { uploadDeliverable } from '../../helpers/crud.js'
+import Close from '../../styles/images/close.js'
 import Dropzone from 'react-dropzone'
-import Upload from '../styles/images/Upload.js'
-import { auth, storage } from '../constants/firebase.js'
+import Upload from '../../styles/images/Upload.js'
+import { auth, storage } from '../../constants/firebase.js'
 
 export default class UploadDeliverable extends Component {
   static propTypes = {}
@@ -76,12 +76,13 @@ export default class UploadDeliverable extends Component {
               </div>
               <p>Drag files here to upload.</p>
               {this.state.transferCurrent !== 0 &&
-                this.state.transferCurrent !== this.state.transferTotal &&
-                <progress
-                  value={this.state.transferCurrent}
-                  max={this.state.transferTotal}
-                  className="w-100"
-                />}
+                this.state.transferCurrent !== this.state.transferTotal && (
+                  <progress
+                    value={this.state.transferCurrent}
+                    max={this.state.transferTotal}
+                    className="w-100"
+                  />
+                )}
             </Dropzone>
 
             <input
