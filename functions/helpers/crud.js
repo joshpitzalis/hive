@@ -28,14 +28,13 @@ exports.updateTask = functions.database
 exports.challengeDeclined = functions.database
   .ref(`/users/{anyUser}/pending/{anyTask}`)
   .onDelete(event => {
-    console.log('deleted task', event.data.val())
     admin
       .auth()
-      .getUserByEmail(event.data.val().from)
+      .getUserByEmail(event.data.previous.val().from)
       .then(result =>
         admin
           .database()
-          .ref(`/users/${result.uid}/sent/${event.data.val().taskId}`)
+          .ref(`/users/${result.uid}/sent/${event.data.previous.val().taskId}`)
           .update({
             declined: true
           })

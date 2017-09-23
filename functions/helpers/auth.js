@@ -25,25 +25,11 @@ exports.createClient = functions.database
     const createdAt = event.data.val().createdAt
     const taskId = event.data.val().taskId
 
-    //   // need to search if account exists
-    //   const userAccount = admin
-    //     .database()
-    //     .ref('/users/{anyUser}/info')
-    //     .orderByChild('email')
-    //     .equalTo(userEmail)
-    //     .once('value')
-    //     .then(snap => console.log(snap.val()))
-    // })
-
+    //search if the account already exists
     admin
       .auth()
-      .createUser({
-        email: userEmail,
-        emailVerified: false,
-        password: 'changeme'
-      })
-      .then(function(userRecord) {
-        // send pending task to new user
+      .getUserByEmail(event.data.val().client)
+      .then(userRecord =>
         admin
           .database()
           .ref(`/users/${userRecord.uid}/pending/${taskId}`)
@@ -54,8 +40,32 @@ exports.createClient = functions.database
             taskId,
             createdAt
           })
-      })
-      .catch(error => console.log('Error creating new user:', error))
+          .catch(error =>
+            console.log('Error sending pending task to reciever', error)
+          )
+      )
+      .catch(error =>
+        admin
+          .auth()
+          .createUser({
+            email: userEmail,
+            emailVerified: false,
+            password: 'changeme'
+          })
+          .then(userRecord => {
+            // send pending task to new user
+            admin
+              .database()
+              .ref(`/users/${userRecord.uid}/pending/${taskId}`)
+              .update({
+                title,
+                from,
+                due,
+                taskId,
+                createdAt
+              })
+          })
+      )
   })
 
 // When a user deletes their account, clean up after them

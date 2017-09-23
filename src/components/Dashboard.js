@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import Task from './tasks/Sent'
 import Pending from './tasks/Pending'
+import Active from './tasks/Active'
 import Deliverable from './tasks/Deliverable'
 import Add from './modals/Add'
+import AddCard from './modals/AddCard'
 import Upload from './modals/Upload'
 import { firebaseAuth, ref } from '../constants/firebase.js'
 import { Button, DisplayText } from '@shopify/polaris'
@@ -12,11 +14,14 @@ export default class Dashboard extends Component {
     add: false,
     deliver: false,
     pendingTasks: null,
-    tasksYouSent: null
+    tasksYouSent: null,
+    activeTasks: null,
+    showCardEntryForm: false,
+    taskId: null
   }
 
   componentDidMount() {
-    // this.getTasksINeedToDo()
+    this.getActiveTasks()
     this.getTasksSent()
     this.getPendingTasks()
   }
@@ -25,15 +30,19 @@ export default class Dashboard extends Component {
     this.setState({ add: !this.state.add })
   }
 
+  toggleAddCardModal = () => {
+    this.setState({ showCardEntryForm: !this.state.showCardEntryForm })
+  }
+
   toggleUploadModal = () => {
     this.setState({ deliver: !this.state.deliver })
   }
 
-  // getTasksINeedToDo = () => {
-  //   ref
-  //     .child(`/users/${firebaseAuth().currentUser.uid}/tasks`)
-  //     .on('value', snap => this.setState({ thingsYouNeedToDo: snap.val() }))
-  // }
+  getActiveTasks = () => {
+    ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/active`)
+      .on('value', snap => this.setState({ activeTasks: snap.val() }))
+  }
 
   getTasksSent = () => {
     ref
@@ -45,6 +54,10 @@ export default class Dashboard extends Component {
     ref
       .child(`/users/${firebaseAuth().currentUser.uid}/pending`)
       .on('value', snap => this.setState({ pendingTasks: snap.val() }))
+  }
+
+  handleShowCardEntryForm = taskId => {
+    this.setState({ showCardEntryForm: true, taskId })
   }
 
   // handleArchive = async taskId => {
@@ -90,54 +103,68 @@ export default class Dashboard extends Component {
           due={task.deadline}
           taskId={task.taskId}
           createdAt={task.createdAt}
+          showCardEntryForm={this.handleShowCardEntryForm}
         />
       ))
 
-    // const ThingsYouNeedToDo =
-    //   this.state.thingsYouNeedToDo &&
-    // Object.values(this.state.thingsYouNeedToDo).map(task => (
-    //     <Deliverable
-    //       key={task.taskId}
-    // ready={task.ready}
-    // title={task.deliverable}
-    // client={task.client}
-    // due={task.deadline}
-    // taskId={task.taskId}
-    // file={task.file}
-    // url={task.url}
-    // handleArchive={this.handleArchive}
-    //     />
-    //   ))
+    const ActiveTasks =
+      this.state.activeTasks &&
+      Object.values(this.state.activeTasks).map(task => (
+        <Active
+          key={task.taskId}
+          title={task.title}
+          from={task.client}
+          due={task.deadline}
+          taskId={task.taskId}
+          createdAt={task.createdAt}
+        />
+      ))
+
     return (
       <div className="mw8 center tc">
         {this.state.add && <Add closeAddModal={this.toggleAddModal} />}
-        <Button
-          data-test="createTask"
-          primary
-          size="large"
-          onClick={this.toggleAddModal}
-        >
+        {this.state.showCardEntryForm && (
+          <AddCard
+            closeAddCardModal={this.toggleAddCardModal}
+            taskId={this.state.taskId}
+          />
+        )}
+        <Button primary size="large" onClick={this.toggleAddModal}>
           Send Someone A Realsie
         </Button>
-        <br />
-        <br />
+
+        {ActiveTasks && (
+          <section>
+            <br />
+            <br />
+            <DisplayText size="extraLarge">You Agreed To...</DisplayText>
+            <div className="pv4">{ActiveTasks}</div>
+          </section>
+        )}
 
         {/* {this.state.deliver &&
         <Upload closeUploadModal={this.toggleUploadModal} />} */}
         {/* <div className="pv3">{ThingsYouWillGet}</div> */}
+
         {PendingTasks && (
           <section>
+            <br />
+            <br />
             <DisplayText size="extraLarge">
-              You have been Asked To...
+              You Have Been Asked To...
             </DisplayText>
-            <div className="pv3">{PendingTasks}</div>
+            <div className="pv4">{PendingTasks}</div>
           </section>
         )}
 
-        <br />
-        <br />
-        {TasksYouSent && <DisplayText size="extraLarge">Sent</DisplayText>}
-        <div className="pv3">{TasksYouSent}</div>
+        {TasksYouSent && (
+          <div>
+            <br />
+            <br />
+            <DisplayText size="extraLarge">You Sent...</DisplayText>
+            <div className="pv4">{TasksYouSent}</div>
+          </div>
+        )}
       </div>
     )
   }

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { declineChallenge } from '../../helpers/crud'
+import { acceptChallenge, declineChallenge } from '../../helpers/crud'
 
 import { Card, Button } from '@shopify/polaris'
 
@@ -11,26 +11,27 @@ const Pending = ({
   deliver,
   taskId,
   from,
-  createdAt,
-  showCardEntryForm
+  createdAt
 }) => {
   return (
     <Card
       title={title}
       sectioned
-      primaryFooterAction={{
-        content: 'Accept',
-        onAction: () => showCardEntryForm(taskId)
-      }}
       secondaryFooterAction={{
-        content: 'Decline',
-        onAction: () => declineChallenge(taskId)
+        content: 'Deliver',
+        onAction: () => console.log('dog')
       }}
     >
-      <div className="flex">
-        <h2 className="pl4">
+      <div className="flex mxc">
+        <h2>
           {from || 'Someone'} asked you to do this by {due || 'sometime'}.
         </h2>
+      </div>
+      <div className="flex mxc cxc pt3">
+        <span className="br-100 bg-green h2 w2" />
+        <p data-test="activeTask" className=" pl3">
+          Active
+        </p>
       </div>
     </Card>
   )

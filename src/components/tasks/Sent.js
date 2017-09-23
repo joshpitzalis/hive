@@ -24,15 +24,18 @@ const Task = ({
       {declined ? (
         <div className="flex mxc cxc">
           <span
+            data-test="taskDeclined"
             className={`br-100 bg-red h2 w2 pointer`}
             title="Click to Archive"
           />
-          <p>{`${client} Declined. Click here to archive this task`}</p>
+          <p className="pl3">{`${client} Declined.`}</p>
         </div>
       ) : (
         <div className="flex mxc cxc">
           <span className="br-100 bg-gold h2 w2" />
-          <p className=" pl3">Awaiting response</p>
+          <p data-test="awaitingResponse" className=" pl3">
+            Awaiting response
+          </p>
         </div>
       )}
     </Card>

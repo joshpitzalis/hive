@@ -1,32 +1,32 @@
 import { firebaseAuth, ref } from '../constants/firebase.js'
 
-export const acceptChallenge = (taskId, title, client, due, created) => {
+export const acceptChallenge = (taskId, title, client, due, createdAt) => {
   const taskData = {
     title,
     client,
     due,
     taskId,
-    created
+    createdAt
   }
-
-  console.log('taskData', taskData)
-  // add to active (user + general)
-
-  // ref
-  //   .child(`users/${firebaseAuth().currentUser.uid}/deliverable/${taskId}`)
-  //   .update(taskData)
-  //   .catch(error => console.error(error))
-
-  // remove from pending (user + general)
-  // them
+  const pathUpdates = {}
+  pathUpdates[
+    `users/${firebaseAuth().currentUser.uid}/pending/${taskId}`
+  ] = null
+  pathUpdates[`pendingTasks/${taskId}`] = null
+  pathUpdates[
+    `users/${firebaseAuth().currentUser.uid}/active/${taskId}`
+  ] = taskData
+  pathUpdates[`activeTasks/${taskId}`] = taskData
+  ref.update(pathUpdates).catch(error => console.error(error))
 }
 
 export const declineChallenge = taskId => {
-  ref
-    .child(`users/${firebaseAuth().currentUser.uid}/pending/${taskId}`)
-    .remove()
-    .catch(error => console.error(error))
-
+  const pathUpdates = {}
+  pathUpdates[
+    `users/${firebaseAuth().currentUser.uid}/pending/${taskId}`
+  ] = null
+  pathUpdates[`pendingTasks/${taskId}`] = null
+  ref.update(pathUpdates).catch(error => console.error(error))
   // cloud function 'challengeDeclined' will then change status to declined for sender, to avoid passing uids around in the client
 }
 
