@@ -17,7 +17,8 @@ export default class Dashboard extends Component {
     tasksYouSent: null,
     activeTasks: null,
     showCardEntryForm: false,
-    taskId: null
+    taskId: null,
+    deliverableTaskId: null
   }
 
   componentDidMount() {
@@ -34,8 +35,8 @@ export default class Dashboard extends Component {
     this.setState({ showCardEntryForm: !this.state.showCardEntryForm })
   }
 
-  toggleUploadModal = () => {
-    this.setState({ deliver: !this.state.deliver })
+  toggleUploadModal = taskId => {
+    this.setState({ deliver: !this.state.deliver, deliverableTaskId: taskId })
   }
 
   getActiveTasks = () => {
@@ -117,6 +118,8 @@ export default class Dashboard extends Component {
           due={task.deadline}
           taskId={task.taskId}
           createdAt={task.createdAt}
+          ready={task.ready}
+          toggleUploadModal={this.toggleUploadModal}
         />
       ))
 
@@ -127,6 +130,12 @@ export default class Dashboard extends Component {
           <AddCard
             closeAddCardModal={this.toggleAddCardModal}
             taskId={this.state.taskId}
+          />
+        )}
+        {this.state.deliver && (
+          <Upload
+            closeUploadModal={this.toggleUploadModal}
+            taskId={this.state.deliverableTaskId}
           />
         )}
         <Button primary size="large" onClick={this.toggleAddModal}>
@@ -141,10 +150,6 @@ export default class Dashboard extends Component {
             <div className="pv4">{ActiveTasks}</div>
           </section>
         )}
-
-        {/* {this.state.deliver &&
-        <Upload closeUploadModal={this.toggleUploadModal} />} */}
-        {/* <div className="pv3">{ThingsYouWillGet}</div> */}
 
         {PendingTasks && (
           <section>
@@ -165,6 +170,8 @@ export default class Dashboard extends Component {
             <div className="pv4">{TasksYouSent}</div>
           </div>
         )}
+
+        {/* <div className="pv3">{ThingsYouWillGet}</div> */}
       </div>
     )
   }

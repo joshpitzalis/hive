@@ -92,26 +92,24 @@ class _CardDetails extends Component {
   state = {
     error: null
   }
-  handleSubmit = e => {
+  handleSubmit = async e => {
     e.preventDefault()
-    this.props.stripe
+    this.setState({ error: 'Verifying...' })
+    const saveCardDetails = await this.props.stripe
       .createToken()
-      .then(({ token }) => {
+      .then(({ token }) =>
         ref
           .child(`/users/${firebaseAuth().currentUser.uid}/sources`)
           .update({ token })
-          .then(() =>
-            acceptChallenge(
-              this.props.taskDetails.taskId,
-              this.props.taskDetails.deliverable,
-              this.props.taskDetails.client,
-              this.props.taskDetails.deadline,
-              this.props.taskDetails.createdAt
-            )
-          )
-          .then(() => this.props.closeAddCardModal)
-      })
-      .catch(error => this.setState({ error }))
+      )
+    const activeTask = await acceptChallenge(
+      this.props.taskDetails.taskId,
+      this.props.taskDetails.deliverable,
+      this.props.taskDetails.client,
+      this.props.taskDetails.deadline,
+      this.props.taskDetails.createdAt
+    )
+    this.props.closeAddCardModal()
   }
 
   render() {

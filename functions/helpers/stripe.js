@@ -42,6 +42,40 @@ exports.addPaymentSource = functions.database
       })
   })
 
+exports.dailyCharge = functions.https.onRequest((req, res) => {
+  const users = []
+  let today = new Date().toISOString()
+
+  admin
+    .database()
+    .ref()
+    .child('activeTasks')
+    .orderByChild('due')
+    .endAt(today)
+    .once('value')
+    .then(activeTasks => {
+      activeTasks.forEach(task => {
+        const user = task.val().userId
+        const card = task.val().cardId
+        users.push({ userId: user, cardId: card })
+      })
+      return users
+    })
+    .then(users =>
+      users.map(user => {
+        if (user.cardId) {
+          admin
+            .database()
+            .ref(`/users/${user.userId}/charges`)
+            .push({
+              source: user.cardId,
+              amount: 500
+            })
+        }
+      })
+    )
+})
+
 // Charge the Stripe customer whenever an amount is written to the Realtime database
 exports.createStripeCharge = functions.database
   .ref('/users/{userId}/charges/{id}')
@@ -78,41 +112,3 @@ exports.createStripeCharge = functions.database
         }
       )
   })
-
-exports.dailyCharge = functions.https.onRequest((req, res) => {
-  const users = []
-  let today = new Date().toISOString()
-
-  admin
-    .database()
-    .ref()
-    .child('activeTasks')
-    .orderByChild('deadline')
-    .endAt(today)
-    .once('value')
-    .then(activeTasks => {
-      activeTasks.forEach(task => {
-        const user = task.val().userId
-        const card = task.val().cardId
-        users.push({ userId: user, cardId: card })
-      })
-      return users
-    })
-    .then(users =>
-      users.map(user => {
-        if (user.cardId) {
-          admin
-            .database()
-            .ref(`/users/${user.userId}/charges`)
-            .push({
-              source: user.cardId,
-              amount: 500
-            })
-        }
-      })
-    )
-})
-
-// write a charge to /users/{userId}/charges/{id}
-
-// a charge is amount, source: cardId

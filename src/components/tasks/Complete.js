@@ -12,37 +12,32 @@ const Active = ({
   taskId,
   from,
   ready,
+  timeDelivered,
   createdAt
 }) => {
   return (
     <Card
       title={title}
       sectioned
+      primaryFooterAction={{
+        content: 'Archive',
+        onAction: () => console.log('download me')
+      }}
       secondaryFooterAction={{
-        content: 'Deliver',
-        onAction: () => toggleUploadModal(taskId)
+        content: 'Download',
+        onAction: () => console.log('achive me')
       }}
     >
       <div className="flex mxc">
-        <h2>
-          {from || 'Someone'} asked you to do this by {due || 'sometime'}.
-        </h2>
+        <h2>This was completed on {timeDelivered || 'sometime'}.</h2>
       </div>
-      {ready ? (
-        <div className="flex mxc cxc pt3">
-          <span className="br-100 bg-black h2 w2" />
-          <p data-test="activeTask" className=" pl3">
-            Complete
-          </p>
-        </div>
-      ) : (
-        <div className="flex mxc cxc pt3">
-          <span className="br-100 bg-green h2 w2" />
-          <p data-test="activeTask" className=" pl3">
-            Active
-          </p>
-        </div>
-      )}
+
+      <div className="flex mxc cxc pt3">
+        <span className="br-100 bg-black h2 w2" />
+        <p data-test="activeTask" className=" pl3">
+          Complete
+        </p>
+      </div>
     </Card>
   )
 }

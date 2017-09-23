@@ -41,9 +41,13 @@ export default class UploadDeliverable extends Component {
       .catch(error => console.error(error))
   }
 
-  handleSubmit = () => {
-    uploadDeliverable(this.state.upload, this.state.url, this.props.taskId)
-    this.props.toggleUploadModal()
+  handleSubmit = async () => {
+    await uploadDeliverable(
+      this.state.upload,
+      this.state.url,
+      this.props.taskId
+    )
+    this.props.closeUploadModal()
   }
 
   render() {
