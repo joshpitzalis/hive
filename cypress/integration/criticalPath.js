@@ -1,7 +1,7 @@
 const user1 = 'test@test.com'
-const password1 = `test123`
-const user2 = `something@something.com`
-const password2 = `changeme`
+const password1 = 'test123'
+const user2 = 'something@something.com'
+const password2 = 'changeme'
 
 describe('The Home Page', () => {
   it('successfully loads', () => {
@@ -40,14 +40,14 @@ describe('Creating a New Task', () => {
   it('creates a new task', () => {
     cy.contains('Send Someone A Realsie').click()
     cy.get('input[type=email]').type(user2)
-    cy.get('input[type=text]').type(`something something`)
+    cy.get('input[type=text]').type('something something')
     cy.contains('Send Realsie').click()
     cy.url().should('include', '/dashboard')
     cy.contains('something something')
   })
 
-  // test a specific date
-  // test with a link
+// test a specific date
+// test with a link
 })
 
 describe('Recieving a New Task', () => {
@@ -78,7 +78,7 @@ describe('Sending multiple tasks to the same User', () => {
 
     cy.contains('Send Someone A Realsie').click()
     cy.get('input[type=email]').type(user2)
-    cy.get('input[type=text]').type(`something something else`)
+    cy.get('input[type=text]').type('something something else')
     cy.contains('Send Realsie').click()
     cy.url().should('include', '/dashboard')
     cy.contains('something something else')
@@ -110,6 +110,35 @@ describe('Accepting a Pending Task', () => {
       .parent()
       .contains('Accept')
       .click()
+
+    cy
+      .get('[aria-label="Credit or debit card number"]')
+      .type('4242 4242 4242 4242')
+
+    cy.get('[aria-label="Credit or debit card expiration date"]').type('0424')
+    cy.get('[aria-label="Credit or debit card CVC/CVV"]').type('242')
+    cy.get('[aria-label="ZIP"]').type('42424')
+    cy.get('.Polaris-Button--primary').click()
+
+    cy
+      .contains('something something else')
+      .parentsUntil('.Polaris-Card')
+      .parent()
+      .contains('Active')
+      .should('exist')
+  })
+})
+
+describe('Sender can see their task has been accepted', () => {
+  beforeEach(() => {
+    cy.visit('/login')
+    cy.get('input[name=email-address]').type(user1)
+    cy.get('input[name=password]').type(password1)
+    cy.get('[data-test="loginButton"]').click()
+  })
+
+  it('accepts a pending task', () => {
+    cy.url().should('include', '/dashboard')
     cy
       .contains('something something else')
       .parentsUntil('.Polaris-Card')
@@ -128,10 +157,10 @@ describe('Rejecting a Pending Task', () => {
 
     cy.contains('Send Someone A Realsie').click()
     cy.get('input[type=email]').type(user2)
-    cy.get('input[type=text]').type(`something something hey`)
+    cy.get('input[type=text]').type('something something hey')
     cy.contains('Send Realsie').click()
     cy.url().should('include', '/dashboard')
-    cy.contains(`something something hey`).should('exist')
+    cy.contains('something something hey').should('exist')
   })
 
   it('User 2 rejects the task', () => {
@@ -147,7 +176,7 @@ describe('Rejecting a Pending Task', () => {
       .contains('Decline')
       .click()
 
-    cy.contains(`something something hey`).should('not.exist')
+    cy.contains('something something hey').should('not.exist')
   })
 
   it('User 1 can see the task has been rejected', () => {
@@ -156,7 +185,7 @@ describe('Rejecting a Pending Task', () => {
     cy.get('input[name=password]').type(password1)
     cy.get('[data-test="loginButton"]').click()
     cy.wait(15000)
-    cy.get('[data-test="taskDeclined"]').should(`exist`)
+    cy.get('[data-test="taskDeclined"]').should('exist')
   })
 })
 
@@ -213,4 +242,9 @@ describe('Delete test User Accounts', () => {
     cy.get('[data-test="deleteUser"]').click()
     cy.url().should('include', '/login')
   })
+})
+
+it('deliver an accepted task', () => {
+})
+it('archive a complete task', () => {
 })

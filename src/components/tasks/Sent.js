@@ -1,6 +1,6 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Card, Button } from '@shopify/polaris'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Card, Button } from '@shopify/polaris';
 
 const Task = ({
   declined,
@@ -12,7 +12,9 @@ const Task = ({
   client,
   file,
   url,
-  handleArchive
+  handleArchive,
+  accepted,
+  ready
 }) => {
   return (
     <Card title={title} sectioned>
@@ -20,8 +22,33 @@ const Task = ({
         You asked {client || 'Someone'} to do this by {due || 'sometime'}.
       </h2>
       <br />
-
-      {declined ? (
+      {ready ? (
+        <div className="flex mxc cxc pt3">
+          <span className="br-100 bg-black h2 w2" />
+          <div className="flex col">
+            <p data-test="completeTask" className=" pl3">
+              Complete
+            </p>
+            {url && (
+              <a href={url} className=" pl3">
+                Go to link
+              </a>
+            )}
+            {file && (
+              <a href={file} className=" pl3" download>
+                Download
+              </a>
+            )}
+          </div>
+        </div>
+      ) : accepted ? (
+        <div className="flex mxc cxc pt3">
+          <span className="br-100 bg-green h2 w2" />
+          <p data-test="activeTask" className=" pl3">
+            Active
+          </p>
+        </div>
+      ) : declined ? (
         <div className="flex mxc cxc">
           <span
             data-test="taskDeclined"
@@ -39,18 +66,18 @@ const Task = ({
         </div>
       )}
     </Card>
-  )
-}
+  );
+};
 
 Task.propTypes = {
   title: PropTypes.string.isRequired,
   from: PropTypes.string.isRequired,
   due: PropTypes.string.isRequired
-}
+};
 Task.defaultProps = {
   title: 'Thing',
   from: 'Someone',
   due: 'Sometime'
-}
+};
 
-export default Task
+export default Task;

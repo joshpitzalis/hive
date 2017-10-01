@@ -7,13 +7,7 @@ import { Elements, CardElement, injectStripe } from 'react-stripe-elements'
 import { firebaseAuth, ref } from '../../constants/firebase.js'
 import { acceptChallenge } from '../../helpers/crud'
 
-import {
-  TextField,
-  ButtonGroup,
-  Button,
-  FormLayout,
-  DisplayText
-} from '@shopify/polaris'
+import { TextField, ButtonGroup, Button, FormLayout, DisplayText} from '@shopify/polaris'
 
 export default class Add extends Component {
   state = {
@@ -29,7 +23,7 @@ export default class Add extends Component {
     taskDetails: null
   }
 
-  componentDidMount() {
+  componentDidMount () {
     ref
       .child(`/pendingTasks/${this.props.taskId}`)
       .once('value')
@@ -56,30 +50,29 @@ export default class Add extends Component {
       this.state.deadline,
       Date.now(),
       null
-      // source
+    // source
     )
     this.props.closeAddModal()
   }
 
-  render() {
+  render () {
     return (
-      <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
-        <div className="flex mxc cxc w-100 h-100">
-          <div className="bg-white pa4 w5 w-40-ns br3">
-            <DisplayText size="extraLarge">{`Commit to ${this.state.taskDetails
-              ? this.state.taskDetails.deliverable
-              : `...`} for ${this.state.taskDetails
-              ? this.state.taskDetails.client
-              : `...`} by ${this.state.taskDetails
-              ? this.state.taskDetails.deadline
-              : `...`} or be charged $10 everyday till you do.`}</DisplayText>
+      <div className='flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1'>
+        <div className='flex mxc cxc w-100 h-100'>
+          <div className='bg-white pa4 w5 w-40-ns br3'>
+            <DisplayText size='extraLarge'>
+              {`Commit to ${this.state.taskDetails
+                ? this.state.taskDetails.deliverable
+                : `...`} for ${this.state.taskDetails
+                ? this.state.taskDetails.client
+                : `...`} by ${this.state.taskDetails
+                ? this.state.taskDetails.deadline
+                : `...`} or be charged $10 everyday till you do.`}
+            </DisplayText>
             <br />
             <br />
             <Elements>
-              <CardDetails
-                closeAddCardModal={this.props.closeAddCardModal}
-                taskDetails={this.state.taskDetails}
-              />
+              <CardDetails closeAddCardModal={this.props.closeAddCardModal} taskDetails={this.state.taskDetails} />
             </Elements>
           </div>
         </div>
@@ -95,31 +88,30 @@ class _CardDetails extends Component {
   handleSubmit = async e => {
     e.preventDefault()
     this.setState({ error: 'Verifying...' })
-    const saveCardDetails = await this.props.stripe
-      .createToken()
-      .then(({ token }) =>
-        ref
-          .child(`/users/${firebaseAuth().currentUser.uid}/sources`)
-          .update({ token })
-      )
+
     const activeTask = await acceptChallenge(
       this.props.taskDetails.taskId,
       this.props.taskDetails.deliverable,
       this.props.taskDetails.client,
       this.props.taskDetails.deadline,
-      this.props.taskDetails.createdAt
+      this.props.taskDetails.createdAt,
+      this.props.taskDetails.sendersUid
     )
     this.props.closeAddCardModal()
   }
 
-  render() {
+  render () {
     return (
       <FormLayout>
-        <CardElement style={{ base: { fontSize: '18px' } }} className="w-80" />
+        <CardElement className='w-80' />
         <br />
-        {this.state.error && <p className="red">{this.state.error}</p>}
+        {this.state.error && <p className='red'>
+                               {this.state.error}
+                             </p>}
         <ButtonGroup>
-          <Button onClick={this.props.closeAddCardModal}>Cancel</Button>
+          <Button onClick={this.props.closeAddCardModal}>
+            Cancel
+          </Button>
           <Button primary onClick={this.handleSubmit}>
             Verify Card
           </Button>

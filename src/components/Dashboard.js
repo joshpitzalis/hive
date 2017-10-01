@@ -1,88 +1,77 @@
-import React, { Component } from 'react'
-import Task from './tasks/Sent'
-import Pending from './tasks/Pending'
-import Active from './tasks/Active'
-import Deliverable from './tasks/Deliverable'
-import Add from './modals/Add'
-import AddCard from './modals/AddCard'
-import Upload from './modals/Upload'
-import { firebaseAuth, ref } from '../constants/firebase.js'
-import { Button, DisplayText } from '@shopify/polaris'
+import React, { Component } from 'react';
+import Task from './tasks/Sent';
+import Pending from './tasks/Pending';
+import Active from './tasks/Active';
+import Deliverable from './tasks/Deliverable';
+import Add from './modals/Add';
+import AddCard from './modals/AddCard';
+import Upload from './modals/Upload';
+import { firebaseAuth, ref } from '../constants/firebase.js';
+import { Button, DisplayText } from '@shopify/polaris';
 
 export default class Dashboard extends Component {
-  state = {
-    add: false,
-    deliver: false,
-    pendingTasks: null,
-    tasksYouSent: null,
-    activeTasks: null,
-    showCardEntryForm: false,
-    taskId: null,
-    deliverableTaskId: null
+  constructor(props) {
+    super(props);
+    this.state = {
+      add: false,
+      deliver: false,
+      pendingTasks: null,
+      tasksYouSent: null,
+      activeTasks: null,
+      showCardEntryForm: false,
+      taskId: null,
+      deliverableTaskId: null
+    };
+
+    this.toggleAddModal = this.toggleAddModal.bind(this);
   }
 
   componentDidMount() {
-    this.getActiveTasks()
-    this.getTasksSent()
-    this.getPendingTasks()
+    this.getActiveTasks();
+    this.getTasksSent();
+    this.getPendingTasks();
   }
 
-  toggleAddModal = () => {
-    this.setState({ add: !this.state.add })
+  toggleAddModal() {
+    this.setState({ add: !this.state.add });
   }
 
   toggleAddCardModal = () => {
-    this.setState({ showCardEntryForm: !this.state.showCardEntryForm })
-  }
+    this.setState({ showCardEntryForm: !this.state.showCardEntryForm });
+  };
 
   toggleUploadModal = taskId => {
-    this.setState({ deliver: !this.state.deliver, deliverableTaskId: taskId })
-  }
+    this.setState({ deliver: !this.state.deliver, deliverableTaskId: taskId });
+  };
 
   getActiveTasks = () => {
     ref
       .child(`/users/${firebaseAuth().currentUser.uid}/active`)
-      .on('value', snap => this.setState({ activeTasks: snap.val() }))
-  }
+      .on('value', snap => this.setState({ activeTasks: snap.val() }));
+  };
 
   getTasksSent = () => {
     ref
       .child(`/users/${firebaseAuth().currentUser.uid}/sent`)
-      .on('value', snap => this.setState({ tasksYouSent: snap.val() }))
-  }
+      .on('value', snap => this.setState({ tasksYouSent: snap.val() }));
+  };
 
   getPendingTasks = () => {
     ref
       .child(`/users/${firebaseAuth().currentUser.uid}/pending`)
-      .on('value', snap => this.setState({ pendingTasks: snap.val() }))
-  }
+      .on('value', snap => this.setState({ pendingTasks: snap.val() }));
+  };
 
   handleShowCardEntryForm = taskId => {
-    this.setState({ showCardEntryForm: true, taskId })
-  }
-
-  // handleArchive = async taskId => {
-  //   const task = await ref
-  //     .child(`/users/${firebaseAuth().currentUser.uid}/beGiven/${taskId}`)
-  //     .once('value')
-  //     .then(snap => snap.val())
-  //     .catch(error => console.error(error))
-  //   ref
-  //     .child(`/users/${firebaseAuth().currentUser.uid}/beGiven/${taskId}`)
-  //     .remove()
-  //     .catch(error => console.error(error))
-  //   ref
-  //     .child(`/users/${firebaseAuth().currentUser.uid}/archived`)
-  //     .push(task)
-  //     .catch(error => console.error(error))
-  // }
+    this.setState({ showCardEntryForm: true, taskId });
+  };
 
   render() {
     const TasksYouSent =
       this.state.tasksYouSent &&
-      Object.values(this.state.tasksYouSent).map(task => (
+      Object.values(this.state.tasksYouSent).map((task, index) => (
         <Task
-          key={task.taskId}
+          key={index}
           declined={task.declined}
           title={task.deliverable}
           client={task.client}
@@ -90,9 +79,10 @@ export default class Dashboard extends Component {
           taskId={task.taskId}
           file={task.file}
           url={task.url}
-          handleArchive={this.handleArchive}
+          accepted={task.accepted}
+          ready={task.ready}
         />
-      ))
+      ));
 
     const PendingTasks =
       this.state.pendingTasks &&
@@ -106,13 +96,13 @@ export default class Dashboard extends Component {
           createdAt={task.createdAt}
           showCardEntryForm={this.handleShowCardEntryForm}
         />
-      ))
+      ));
 
     const ActiveTasks =
       this.state.activeTasks &&
-      Object.values(this.state.activeTasks).map(task => (
+      Object.values(this.state.activeTasks).map((task, index) => (
         <Active
-          key={task.taskId}
+          key={index}
           title={task.title}
           from={task.client}
           due={task.deadline}
@@ -120,8 +110,9 @@ export default class Dashboard extends Component {
           createdAt={task.createdAt}
           ready={task.ready}
           toggleUploadModal={this.toggleUploadModal}
+          archived={task.archived}
         />
-      ))
+      ));
 
     return (
       <div className="mw8 center tc">
@@ -141,7 +132,6 @@ export default class Dashboard extends Component {
         <Button primary size="large" onClick={this.toggleAddModal}>
           Send Someone A Realsie
         </Button>
-
         {ActiveTasks && (
           <section>
             <br />
@@ -150,7 +140,6 @@ export default class Dashboard extends Component {
             <div className="pv4">{ActiveTasks}</div>
           </section>
         )}
-
         {PendingTasks && (
           <section>
             <br />
@@ -161,7 +150,6 @@ export default class Dashboard extends Component {
             <div className="pv4">{PendingTasks}</div>
           </section>
         )}
-
         {TasksYouSent && (
           <div>
             <br />
@@ -170,9 +158,7 @@ export default class Dashboard extends Component {
             <div className="pv4">{TasksYouSent}</div>
           </div>
         )}
-
-        {/* <div className="pv3">{ThingsYouWillGet}</div> */}
       </div>
-    )
+    );
   }
 }

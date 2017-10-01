@@ -7,10 +7,11 @@ import Upload from '../../styles/images/Upload.js'
 import { auth, storage } from '../../constants/firebase.js'
 
 export default class UploadDeliverable extends Component {
-  static propTypes = {}
-
-  state = {
-    upload: null
+  constructor(props) {
+    super(props)
+    this.state = {
+      upload: null
+    }
   }
 
   handleUrl = e => {

@@ -1,40 +1,44 @@
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
-import { Route, BrowserRouter, Redirect, Switch } from 'react-router-dom'
-import Nav from './components/Nav'
-import Login from './components/Login'
-import Register from './components/Register'
-import Home from './components/Home'
-import Settings from './components/Settings'
-import Dashboard from './components/Dashboard'
-import { firebaseAuth } from './constants/firebase'
-import registerServiceWorker from './registerServiceWorker'
-import './styles/styles.css'
-import { StripeProvider } from 'react-stripe-elements'
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import { Route, BrowserRouter, Redirect, Switch } from 'react-router-dom';
+import Nav from './components/Nav';
+import Login from './components/Login';
+import Register from './components/Register';
+import Home from './components/Home';
+import Settings from './components/Settings';
+import Dashboard from './components/Dashboard';
+import { firebaseAuth } from './constants/firebase';
+import registerServiceWorker from './registerServiceWorker';
+import './styles/styles.css';
+import { StripeProvider } from 'react-stripe-elements';
 // import stripeKey from './constants/stripe.js'
 
 class App extends Component {
-  state = {
-    authed: false,
-    loading: true
+  constructor(props) {
+    super(props);
+    this.state = {
+      authed: false,
+      loading: true
+    };
   }
+
   componentDidMount() {
     this.removeListener = firebaseAuth().onAuthStateChanged(user => {
       if (user) {
         this.setState({
           authed: true,
           loading: false
-        })
+        });
       } else {
         this.setState({
           authed: false,
           loading: false
-        })
+        });
       }
-    })
+    });
   }
   componentWillUnmount() {
-    this.removeListener()
+    this.removeListener();
   }
   render() {
     return this.state.loading === true ? (
@@ -72,7 +76,7 @@ class App extends Component {
           </Switch>
         </main>
       </BrowserRouter>
-    )
+    );
   }
 }
 
@@ -89,7 +93,7 @@ function PrivateRoute({ component: Component, authed, ...rest }) {
           />
         )}
     />
-  )
+  );
 }
 
 function PublicRoute({ component: Component, authed, ...rest }) {
@@ -103,23 +107,23 @@ function PublicRoute({ component: Component, authed, ...rest }) {
           <Redirect to="/dashboard" />
         )}
     />
-  )
+  );
 }
 
 const renderMergedProps = (component, ...rest) => {
-  const finalProps = Object.assign({}, ...rest)
-  return React.createElement(component, finalProps)
-}
+  const finalProps = Object.assign({}, ...rest);
+  return React.createElement(component, finalProps);
+};
 
 function PropsRoute({ component, ...rest }) {
   return (
     <Route
       {...rest}
       render={props => {
-        return renderMergedProps(component, props, rest)
+        return renderMergedProps(component, props, rest);
       }}
     />
-  )
+  );
 }
 
 ReactDOM.render(
@@ -127,5 +131,5 @@ ReactDOM.render(
     <App />
   </StripeProvider>,
   document.getElementById('root')
-)
-registerServiceWorker()
+);
+registerServiceWorker();
