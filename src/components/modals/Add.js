@@ -42,9 +42,9 @@ export default class Add extends Component {
     createNewTask(
       this.state.deliverable,
       this.state.client,
-      this.state.deadline,
-      Date.now(),
-      null
+      this.state.deadline
+      // Date.now(),
+      // null
       // source
     );
     this.props.closeAddModal();

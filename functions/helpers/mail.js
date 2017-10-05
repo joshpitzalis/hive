@@ -30,7 +30,7 @@ exports.newChallengeEmail = functions.database
     const {
       client, from, deliverable, deadline,
     } = event.data.val();
-    console.log(event.data);
+
     return sendNewChallengeEmail(client, from, deliverable, deadline);
   });
 

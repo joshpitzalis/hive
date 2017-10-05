@@ -1,55 +1,55 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { uploadDeliverable } from '../../helpers/crud.js'
-import Close from '../../styles/images/close.js'
-import Dropzone from 'react-dropzone'
-import Upload from '../../styles/images/Upload.js'
-import { auth, storage } from '../../constants/firebase.js'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { uploadDeliverable } from '../../helpers/crud.js';
+import Close from '../../styles/images/close.js';
+import Dropzone from 'react-dropzone';
+import Upload from '../../styles/images/Upload.js';
+import { auth, storage } from '../../constants/firebase.js';
 
 export default class UploadDeliverable extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       upload: null
-    }
+    };
   }
 
   handleUrl = e => {
     this.setState({
       url: e.target.value
-    })
-  }
+    });
+  };
 
   handleUpload = files => {
-    const file = files[0]
+    const file = files[0];
     const uploadTask = storage
       .ref('/deliverables')
       .child(auth.currentUser.uid)
       .child(file.name)
-      .put(file, { contentType: file.type })
+      .put(file, { contentType: file.type });
     uploadTask.on('state_changed', snapshot => {
       this.setState({
         transferCurrent: snapshot.bytesTransferred,
         transferTotal: snapshot.totalBytes
-      })
-    })
+      });
+    });
     uploadTask
       .then(snapshot => {
         this.setState({
           upload: snapshot.downloadURL
-        })
+        });
       })
-      .catch(error => console.error(error))
-  }
+      .catch(error => console.error(error));
+  };
 
   handleSubmit = async () => {
     await uploadDeliverable(
       this.state.upload,
       this.state.url,
       this.props.taskId
-    )
-    this.props.closeUploadModal()
-  }
+    );
+    this.props.closeUploadModal();
+  };
 
   render() {
     return (
@@ -58,7 +58,7 @@ export default class UploadDeliverable extends Component {
           <div className="bg-white pa3 w5 w-40-ns tc">
             <div
               className="tr dim pointer"
-              onClick={this.props.toggleUploadModal}
+              onClick={() => this.props.closeUploadModal()}
             >
               <Close />
             </div>
@@ -98,6 +98,6 @@ export default class UploadDeliverable extends Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }

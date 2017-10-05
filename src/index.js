@@ -11,7 +11,7 @@ import { firebaseAuth } from './constants/firebase';
 import registerServiceWorker from './registerServiceWorker';
 import './styles/styles.css';
 import { StripeProvider } from 'react-stripe-elements';
-// import stripeKey from './constants/stripe.js'
+import { stripeKey } from './constants/stripe.js';
 
 class App extends Component {
   constructor(props) {
@@ -127,7 +127,7 @@ function PropsRoute({ component, ...rest }) {
 }
 
 ReactDOM.render(
-  <StripeProvider apiKey={'pk_test_UEtlVFtmDH1SIsFR5HMOR6tD'}>
+  <StripeProvider apiKey={stripeKey}>
     <App />
   </StripeProvider>,
   document.getElementById('root')

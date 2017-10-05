@@ -41,6 +41,7 @@ export default class Dashboard extends Component {
   };
 
   toggleUploadModal = taskId => {
+    console.log('dog');
     this.setState({ deliver: !this.state.deliver, deliverableTaskId: taskId });
   };
 
