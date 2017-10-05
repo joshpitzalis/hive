@@ -1,14 +1,14 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { createNewTask } from '../../helpers/crud.js'
-import Close from '../../styles/images/close.js'
-import { Checkbox, Label } from 'rebass'
-import { Elements, CardElement, injectStripe } from 'react-stripe-elements'
-import { firebaseAuth, ref } from '../../constants/firebase.js'
-import { TextField, ButtonGroup, Button, FormLayout } from '@shopify/polaris'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { createNewTask } from '../../helpers/crud.js';
+import Close from '../../styles/images/close.js';
+import { Checkbox, Label } from 'rebass';
+import { Elements, CardElement, injectStripe } from 'react-stripe-elements';
+import { firebaseAuth, ref } from '../../constants/firebase.js';
+import { TextField, ButtonGroup, Button, FormLayout } from '@shopify/polaris';
 
 export default class Add extends Component {
-  static propTypes = {}
+  static propTypes = {};
 
   state = {
     deliverable: '',
@@ -20,18 +20,18 @@ export default class Add extends Component {
     month: '',
     year: '',
     hasCard: false
-  }
+  };
 
   componentDidMount() {
     const source = ref
       .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
       .once('value')
-      .then(snap => this.setState({ hasCard: true }))
+      .then(snap => this.setState({ hasCard: true }));
   }
 
-  handleEmailChange = e => this.setState({ client: e })
-  handleDeliverableChange = e => this.setState({ deliverable: e })
-  handleDeadlineChange = e => this.setState({ deadline: e })
+  handleEmailChange = e => this.setState({ client: e });
+  handleDeliverableChange = e => this.setState({ deliverable: e });
+  handleDeadlineChange = e => this.setState({ deadline: e });
 
   handleSubmit = () => {
     // const source = ref
@@ -46,9 +46,9 @@ export default class Add extends Component {
       Date.now(),
       null
       // source
-    )
-    this.props.closeAddModal()
-  }
+    );
+    this.props.closeAddModal();
+  };
 
   render() {
     return (
@@ -65,7 +65,7 @@ export default class Add extends Component {
               />
 
               <TextField
-                label="For"
+                label="To"
                 type="text"
                 onChange={this.handleDeliverableChange}
                 // onChange={this.handleChange('deliverable')}
@@ -91,22 +91,22 @@ export default class Add extends Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 class _CardDetails extends Component {
   handleSubmit = ev => {
-    ev.preventDefault()
+    ev.preventDefault();
     this.props.stripe
       .createToken()
       .then(({ token }) => {
         ref
           .child(`/users/${firebaseAuth().currentUser.uid}/sources`)
-          .update({ token })
+          .update({ token });
       })
-      .catch(reason => console.error(reason))
-  }
+      .catch(reason => console.error(reason));
+  };
 
   // chargeUser = async () => {
   //   const source = await ref
@@ -126,8 +126,8 @@ class _CardDetails extends Component {
         <CardElement style={{ base: { fontSize: '18px' } }} className="w-80" />
         <button type="submit">Verify Card</button>
       </form>
-    )
+    );
   }
 }
 
-const CardDetails = injectStripe(_CardDetails)
+const CardDetails = injectStripe(_CardDetails);
