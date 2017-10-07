@@ -6,8 +6,8 @@ admin.initializeApp(functions.config().firebase);
 const { saveUser, createClient, cleanupUser } = require('./helpers/auth.js');
 const { updateTask, challengeDeclined } = require('./helpers/crud.js');
 const {
-  createStripeCustomer,
-  addPaymentSource,
+  saveCardToStripe,
+  // addPaymentSource,
   createStripeCharge,
   dailyCharge,
 } = require('./helpers/stripe.js');
@@ -18,8 +18,7 @@ exports.createClient = createClient;
 exports.cleanupUser = cleanupUser;
 exports.updateTask = updateTask;
 exports.challengeDeclined = challengeDeclined;
-exports.createStripeCustomer = createStripeCustomer;
-exports.addPaymentSource = addPaymentSource;
-exports.createStripeCustomer = createStripeCustomer;
+exports.saveCardToStripe = saveCardToStripe;
+exports.createStripeCharge = createStripeCharge;
 exports.dailyCharge = dailyCharge;
 exports.newChallengeEmail = newChallengeEmail;

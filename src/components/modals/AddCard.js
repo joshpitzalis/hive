@@ -5,7 +5,6 @@ import { Checkbox, Label } from 'rebass';
 import { Elements, CardElement, injectStripe } from 'react-stripe-elements';
 import { firebaseAuth, ref } from '../../constants/firebase.js';
 import { acceptChallenge, createNewTask } from '../../helpers/crud';
-
 import {
   TextField,
   ButtonGroup,
@@ -15,47 +14,50 @@ import {
 } from '@shopify/polaris';
 
 export default class Add extends Component {
-  state = {
-    deliverable: '',
-    client: '',
-    deadline: '',
-    paid: false,
-    number: '',
-    cvv: '',
-    month: '',
-    year: '',
-    hasCard: false,
-    taskDetails: null
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      deliverable: '',
+      client: '',
+      deadline: '',
+      paid: false,
+      number: '',
+      cvv: '',
+      month: '',
+      year: '',
+      // hasCard: false,
+      taskDetails: null
+    };
+  }
 
   componentDidMount() {
     ref
       .child(`/pendingTasks/${this.props.taskId}`)
       .once('value')
       .then(snap => this.setState({ taskDetails: snap.val() }));
-    const source = ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
-      .once('value')
-      .then(snap => this.setState({ hasCard: true }));
+    // const source = ref
+    //   .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+    //   .once('value')
+    //   .then(snap => this.setState({ hasCard: true }));
   }
 
   handleEmailChange = e => this.setState({ client: e });
   handleDeliverableChange = e => this.setState({ deliverable: e });
   handleDeadlineChange = e => this.setState({ deadline: e });
 
-  handleSubmit = () => {
-    // const source = ref
-    //   .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
-    //   .once('value')
-    //   .then(snap => snap.val().id);
-
-    createNewTask(
-      this.state.deliverable,
-      this.state.client,
-      this.state.deadline
-    );
-    this.props.closeAddModal();
-  };
+  // handleSubmit = () => {
+  //   // const source = ref
+  //   //   .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+  //   //   .once('value')
+  //   //   .then(snap => snap.val().id);
+  //
+  //   // createNewTask(
+  //   //   this.state.deliverable,
+  //   //   this.state.client,
+  //   //   this.state.deadline
+  //   // );
+  //   this.props.closeAddModal();
+  // };
 
   render() {
     return (
@@ -90,19 +92,26 @@ class _CardDetails extends Component {
   state = {
     error: null
   };
-  handleSubmit = async e => {
+  handleSubmit = e => {
     e.preventDefault();
     this.setState({ error: 'Verifying...' });
 
-    const activeTask = await acceptChallenge(
-      this.props.taskDetails.taskId,
-      this.props.taskDetails.deliverable,
-      this.props.taskDetails.client,
-      this.props.taskDetails.deadline,
-      this.props.taskDetails.createdAt,
-      this.props.taskDetails.sendersUid
-    );
-    this.props.closeAddCardModal();
+    this.props.stripe.createToken().then(result => {
+      if (result.error) {
+        this.setState({ error: result.error.message });
+      } else {
+        const activeTask = acceptChallenge(
+          this.props.taskDetails.taskId,
+          this.props.taskDetails.deliverable,
+          this.props.taskDetails.client,
+          this.props.taskDetails.deadline,
+          this.props.taskDetails.createdAt,
+          this.props.taskDetails.sendersUid,
+          result.token
+        );
+        this.props.closeAddCardModal();
+      }
+    });
   };
 
   render() {

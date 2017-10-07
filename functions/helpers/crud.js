@@ -36,7 +36,6 @@ exports.challengeDeclined = functions.database
           .ref(`/users/${result.uid}/sent/${event.data.previous.val().taskId}`)
           .update({
             declined: true,
-          })
-          .catch(error =>
-            console.log('Error showing declined to sender', error)));
+          }))
+      .catch(error => console.log('Error showing declined to sender', error));
   });

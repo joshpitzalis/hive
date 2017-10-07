@@ -133,14 +133,6 @@ export default class Dashboard extends Component {
         <Button primary size="large" onClick={this.toggleAddModal}>
           Send Someone A Realsie
         </Button>
-        {ActiveTasks && (
-          <section>
-            <br />
-            <br />
-            <DisplayText size="extraLarge">You Agreed To...</DisplayText>
-            <div className="pv4">{ActiveTasks}</div>
-          </section>
-        )}
         {PendingTasks && (
           <section>
             <br />
@@ -151,6 +143,16 @@ export default class Dashboard extends Component {
             <div className="pv4">{PendingTasks}</div>
           </section>
         )}
+
+        {ActiveTasks && (
+          <section>
+            <br />
+            <br />
+            <DisplayText size="extraLarge">You Agreed To...</DisplayText>
+            <div className="pv4">{ActiveTasks}</div>
+          </section>
+        )}
+
         {TasksYouSent && (
           <div>
             <br />

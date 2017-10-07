@@ -6,7 +6,8 @@ export const acceptChallenge = (
   client,
   due,
   createdAt,
-  sendersUid
+  sendersUid,
+  token
 ) => {
   const taskData = {
     title,
@@ -16,18 +17,21 @@ export const acceptChallenge = (
     createdAt,
     accepted: true,
     sendersUid,
+    receiversUid: firebaseAuth().currentUser.uid,
   };
   const pathUpdates = {};
   pathUpdates[
     `users/${firebaseAuth().currentUser.uid}/pending/${taskId}`
   ] = null;
+  pathUpdates[`users/${firebaseAuth().currentUser.uid}/info/token`] = token;
   pathUpdates[`pendingTasks/${taskId}`] = null;
   pathUpdates[
     `users/${firebaseAuth().currentUser.uid}/active/${taskId}`
   ] = taskData;
   pathUpdates[`activeTasks/${taskId}`] = taskData;
   pathUpdates[`users/${sendersUid}/sent/${taskId}`] = taskData;
-  ref.update(pathUpdates).catch(error => console.error(error));
+
+  return ref.update(pathUpdates).catch(error => console.error(error));
 };
 
 export const declineChallenge = (taskId) => {
@@ -99,5 +103,4 @@ export const uploadDeliverable = async (
   pathUpdates[`activeTasks/${taskId}`] = null;
   pathUpdates[`users/${taskData.sendersUid}/sent/${taskId}`] = taskData;
   ref.update(pathUpdates).catch(error => console.error(error));
-  console.log('sent', task);
 };
