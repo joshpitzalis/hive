@@ -1,31 +1,32 @@
-const functions = require('firebase-functions')
-const admin = require('firebase-admin')
-const stripe = require('stripe')(functions.config().stripe.token)
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+// const stripe = require('stripe')(functions.config().stripe.token);
+const stripe = require('stripe')(functions.config().stripe.livetoken);
 
 // automatically save new users to the database
-exports.saveUser = functions.auth.user().onCreate(event => {
-  const email = event.data.email
-  const uid = event.data.uid
-  const newUserRef = admin.database().ref(`/users/${uid}/info`)
+exports.saveUser = functions.auth.user().onCreate((event) => {
+  const email = event.data.email;
+  const uid = event.data.uid;
+  const newUserRef = admin.database().ref(`/users/${uid}/info`);
   return newUserRef.update({
     uid,
     email,
-    created: Date.now()
-  })
-})
+    created: Date.now(),
+  });
+});
 
 // creates a new user when a new task is created
 exports.createClient = functions.database
   .ref('/users/{anyUser}/sent/{anyTask}')
-  .onCreate(event => {
-    const userEmail = event.data.val().client
-    const title = event.data.val().deliverable
-    const from = event.data.val().from
-    const due = event.data.val().deadline || null
-    const createdAt = event.data.val().createdAt
-    const taskId = event.data.val().taskId
+  .onCreate((event) => {
+    const userEmail = event.data.val().client;
+    const title = event.data.val().deliverable;
+    const from = event.data.val().from;
+    const due = event.data.val().deadline || null;
+    const createdAt = event.data.val().createdAt;
+    const taskId = event.data.val().taskId;
 
-    //search if the account already exists
+    // search if the account already exists
     admin
       .auth()
       .getUserByEmail(event.data.val().client)
@@ -38,21 +39,19 @@ exports.createClient = functions.database
             from,
             due,
             taskId,
-            createdAt
+            createdAt,
           })
           .catch(error =>
-            console.log('Error sending pending task to reciever', error)
-          )
-      )
+            console.log('Error sending pending task to reciever', error)))
       .catch(error =>
         admin
           .auth()
           .createUser({
             email: userEmail,
             emailVerified: false,
-            password: 'changeme'
+            password: 'changeme',
           })
-          .then(userRecord => {
+          .then((userRecord) => {
             // send pending task to new user
             admin
               .database()
@@ -62,26 +61,25 @@ exports.createClient = functions.database
                 from,
                 due,
                 taskId,
-                createdAt
-              })
-          })
-      )
-  })
+                createdAt,
+              });
+          }));
+  });
 
 // When a user deletes their account, clean up after them
-exports.cleanupUser = functions.auth.user().onDelete(event => {
+exports.cleanupUser = functions.auth.user().onDelete((event) => {
   return admin
     .database()
     .ref(`/users/${event.data.uid}`)
     .once('value')
-    .then(snapshot => {
+    .then((snapshot) => {
       admin
         .database()
         .ref(`/users/${event.data.uid}`)
-        .remove()
-      return snapshot.val()
+        .remove();
+      return snapshot.val();
     })
-    .then(customer => {
-      return stripe.customers.del(customer.info.customer_id)
-    })
-})
+    .then((customer) => {
+      return stripe.customers.del(customer.info.customer_id);
+    });
+});

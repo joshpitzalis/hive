@@ -12,6 +12,10 @@ class Active extends Component {
       .catch(error => console.error(error));
   };
   render() {
+    const today = new Date().toISOString();
+    console.log('due', this.props.due);
+    console.log('today', today);
+
     if (this.props.archived) {
       return null;
     }
@@ -43,7 +47,11 @@ class Active extends Component {
           </div>
         ) : (
           <div className="flex col mxc cxc pt3">
-            <span className="br-100 bg-green h2 w2" />
+            {this.props.due <= today ? (
+              <span className="br-100 bg-red h2 w2" />
+            ) : (
+              <span className="br-100 bg-green h2 w2" />
+            )}
             <p data-test="activeTask">Active</p>
             <p
               className="f5 underline pointer"

@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const stripe = require('stripe')(functions.config().stripe.token);
+// const stripe = require('stripe')(functions.config().stripe.token);
+const stripe = require('stripe')(functions.config().stripe.livetoken);
 
 const currency = functions.config().stripe.currency || 'USD';
 
@@ -10,13 +11,16 @@ exports.saveCardToStripe = functions.database
   .onWrite(event =>
     admin
       .database()
-      .ref(`/users/${event.params.userId}/info/email`)
+      .ref(`/users/${event.params.userId}/info`)
       .once('value')
       .then(snap => snap.val())
-      .then(email =>
-        stripe.customers
+      .then((info) => {
+        if (info.customer_id) {
+          return null;
+        }
+        return stripe.customers
           .create({
-            email,
+            email: info.email,
             source: event.data.val().id,
           })
           .then((customer) => {
@@ -24,7 +28,8 @@ exports.saveCardToStripe = functions.database
               .database()
               .ref(`/users/${event.params.userId}/info/customer_id`)
               .set(customer.id);
-          })));
+          });
+      }));
 
 exports.dailyCharge = functions.https.onRequest(() => {
   const today = new Date().toISOString();

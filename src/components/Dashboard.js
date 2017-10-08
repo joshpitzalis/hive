@@ -106,7 +106,7 @@ export default class Dashboard extends Component {
           key={index}
           title={task.title}
           from={task.client}
-          due={task.deadline}
+          due={task.due}
           taskId={task.taskId}
           createdAt={task.createdAt}
           ready={task.ready}

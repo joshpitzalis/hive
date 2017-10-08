@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Route, BrowserRouter, Redirect, Switch } from 'react-router-dom';
 import Nav from './components/Nav';
 import Login from './components/Login';
-import Register from './components/Register';
+// import Register from './components/Register';
 import Home from './components/Home';
 import Settings from './components/Settings';
 import Dashboard from './components/Dashboard';
@@ -55,11 +55,11 @@ class App extends Component {
                 path="/login"
                 component={Login}
               />
-              <PublicRoute
+              {/* <PublicRoute
                 authed={this.state.authed}
                 path="/register"
                 component={Register}
-              />
+              /> */}
               <PrivateRoute
                 authed={this.state.authed}
                 path="/dashboard"
