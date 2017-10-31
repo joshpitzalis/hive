@@ -1,46 +1,45 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { Route, BrowserRouter, Redirect, Switch } from 'react-router-dom';
-import Nav from './components/Nav';
-import Login from './components/Login';
-// import Register from './components/Register';
-import Home from './components/Home';
-import Settings from './components/Settings';
-import Dashboard from './components/Dashboard';
-import { firebaseAuth } from './constants/firebase';
-import registerServiceWorker from './registerServiceWorker';
-import './styles/styles.css';
-import { StripeProvider } from 'react-stripe-elements';
-import { stripeKey } from './constants/stripe.js';
+import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
+import { Route, BrowserRouter, Redirect, Switch } from 'react-router-dom'
+import Nav from './components/Nav'
+import Login from './components/Login'
+import Register from './components/Register'
+import Home from './components/Home'
+import Settings from './components/Settings'
+import Dashboard from './components/Dashboard'
+import { firebaseAuth } from './constants/firebase'
+import registerServiceWorker from './registerServiceWorker'
+import './styles/styles.css'
+import { StripeProvider } from 'react-stripe-elements'
 
 class App extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
       authed: false,
       loading: true
-    };
+    }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.removeListener = firebaseAuth().onAuthStateChanged(user => {
       if (user) {
         this.setState({
           authed: true,
           loading: false
-        });
+        })
       } else {
         this.setState({
           authed: false,
           loading: false
-        });
+        })
       }
-    });
+    })
   }
-  componentWillUnmount() {
-    this.removeListener();
+  componentWillUnmount () {
+    this.removeListener()
   }
-  render() {
+  render () {
     return this.state.loading === true ? (
       <h1 className="tc">Loading...</h1>
     ) : (
@@ -55,11 +54,13 @@ class App extends Component {
                 path="/login"
                 component={Login}
               />
-              {/* <PublicRoute
-                authed={this.state.authed}
-                path="/register"
-                component={Register}
-              /> */}
+              {process.env.NODE_ENV === 'production' ? null : (
+                <PublicRoute
+                  authed={this.state.authed}
+                  path="/register"
+                  component={Register}
+                />
+              )}
               <PrivateRoute
                 authed={this.state.authed}
                 path="/dashboard"
@@ -76,11 +77,11 @@ class App extends Component {
           </Switch>
         </main>
       </BrowserRouter>
-    );
+    )
   }
 }
 
-function PrivateRoute({ component: Component, authed, ...rest }) {
+function PrivateRoute ({ component: Component, authed, ...rest }) {
   return (
     <Route
       {...rest}
@@ -93,10 +94,10 @@ function PrivateRoute({ component: Component, authed, ...rest }) {
           />
         )}
     />
-  );
+  )
 }
 
-function PublicRoute({ component: Component, authed, ...rest }) {
+function PublicRoute ({ component: Component, authed, ...rest }) {
   return (
     <Route
       {...rest}
@@ -107,29 +108,24 @@ function PublicRoute({ component: Component, authed, ...rest }) {
           <Redirect to="/dashboard" />
         )}
     />
-  );
+  )
 }
 
 const renderMergedProps = (component, ...rest) => {
-  const finalProps = Object.assign({}, ...rest);
-  return React.createElement(component, finalProps);
-};
+  const finalProps = Object.assign({}, ...rest)
+  return React.createElement(component, finalProps)
+}
 
-function PropsRoute({ component, ...rest }) {
+function PropsRoute ({ component, ...rest }) {
   return (
     <Route
       {...rest}
       render={props => {
-        return renderMergedProps(component, props, rest);
+        return renderMergedProps(component, props, rest)
       }}
     />
-  );
+  )
 }
 
-ReactDOM.render(
-  <StripeProvider apiKey={stripeKey}>
-    <App />
-  </StripeProvider>,
-  document.getElementById('root')
-);
-registerServiceWorker();
+ReactDOM.render(<App />, document.getElementById('root'))
+registerServiceWorker()

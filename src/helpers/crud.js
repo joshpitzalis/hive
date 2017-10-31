@@ -1,4 +1,4 @@
-import { firebaseAuth, ref } from '../constants/firebase.js';
+import { firebaseAuth, ref } from '../constants/firebase.js'
 
 export const acceptChallenge = (
   taskId,
@@ -17,38 +17,38 @@ export const acceptChallenge = (
     createdAt,
     accepted: true,
     sendersUid,
-    receiversUid: firebaseAuth().currentUser.uid,
-  };
-  const pathUpdates = {};
+    receiversUid: firebaseAuth().currentUser.uid
+  }
+  const pathUpdates = {}
   pathUpdates[
     `users/${firebaseAuth().currentUser.uid}/pending/${taskId}`
-  ] = null;
-  pathUpdates[`users/${firebaseAuth().currentUser.uid}/info/token`] = token;
-  pathUpdates[`pendingTasks/${taskId}`] = null;
+  ] = null
+  pathUpdates[`users/${firebaseAuth().currentUser.uid}/info/token`] = token
+  pathUpdates[`pendingTasks/${taskId}`] = null
   pathUpdates[
     `users/${firebaseAuth().currentUser.uid}/active/${taskId}`
-  ] = taskData;
-  pathUpdates[`activeTasks/${taskId}`] = taskData;
-  pathUpdates[`users/${sendersUid}/sent/${taskId}`] = taskData;
+  ] = taskData
+  pathUpdates[`activeTasks/${taskId}`] = taskData
+  pathUpdates[`users/${sendersUid}/sent/${taskId}`] = taskData
 
-  return ref.update(pathUpdates).catch(error => console.error(error));
-};
+  return ref.update(pathUpdates).catch(error => console.error(error))
+}
 
-export const declineChallenge = (taskId) => {
-  const pathUpdates = {};
+export const declineChallenge = taskId => {
+  const pathUpdates = {}
   pathUpdates[
     `users/${firebaseAuth().currentUser.uid}/pending/${taskId}`
-  ] = null;
-  pathUpdates[`pendingTasks/${taskId}`] = null;
-  ref.update(pathUpdates).catch(error => console.error(error));
+  ] = null
+  pathUpdates[`pendingTasks/${taskId}`] = null
+  ref.update(pathUpdates).catch(error => console.error(error))
   // cloud function 'challengeDeclined' will then change status to declined for sender, to avoid passing uids around in the client
-};
+}
 
-export function createNewTask(deliverable, client, deadline) {
+export function createNewTask (deliverable, client, deadline) {
   // create a unique id for the task
   const newTaskKey = ref
     .child(`users/${firebaseAuth().currentUser.uid}/sent`)
-    .push().key;
+    .push().key
 
   // create the new task data
   const newTask = {
@@ -60,20 +60,20 @@ export function createNewTask(deliverable, client, deadline) {
     from: firebaseAuth().currentUser.email,
     sendersUid: firebaseAuth().currentUser.uid,
     declined: false,
-    accepted: false,
-  };
+    accepted: false
+  }
 
   // store task with user
   ref
     .child(`users/${firebaseAuth().currentUser.uid}/sent/${newTaskKey}`)
     .update(newTask)
-    .catch(error => console.error(error));
+    .catch(error => console.error(error))
 
   // store tasks in a list of pending tasks
   ref
     .child(`pendingTasks/${newTaskKey}`)
     .update(newTask)
-    .catch(error => console.error(error));
+    .catch(error => console.error(error))
 }
 
 export const uploadDeliverable = async (
@@ -86,21 +86,21 @@ export const uploadDeliverable = async (
     .child(`activeTasks/${taskId}`)
     .once('value')
     .then(snap => snap.val())
-    .catch(error => console.error(error));
+    .catch(error => console.error(error))
 
   const taskData = {
     ...task,
     file,
     url,
     timeDelivered,
-    ready: true,
-  };
+    ready: true
+  }
 
-  const pathUpdates = {};
+  const pathUpdates = {}
   pathUpdates[
     `users/${firebaseAuth().currentUser.uid}/active/${taskId}`
-  ] = taskData;
-  pathUpdates[`activeTasks/${taskId}`] = null;
-  pathUpdates[`users/${taskData.sendersUid}/sent/${taskId}`] = taskData;
-  ref.update(pathUpdates).catch(error => console.error(error));
-};
+  ] = taskData
+  pathUpdates[`activeTasks/${taskId}`] = null
+  pathUpdates[`users/${taskData.sendersUid}/sent/${taskId}`] = taskData
+  ref.update(pathUpdates).catch(error => console.error(error))
+}
