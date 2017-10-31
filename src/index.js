@@ -10,7 +10,6 @@ import Dashboard from './components/Dashboard'
 import { firebaseAuth } from './constants/firebase'
 import registerServiceWorker from './registerServiceWorker'
 import './styles/styles.css'
-import { StripeProvider } from 'react-stripe-elements'
 
 class App extends Component {
   constructor (props) {
