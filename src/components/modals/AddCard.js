@@ -12,7 +12,6 @@ import {
   DisplayText
 } from '@shopify/polaris'
 import StripeCheckout from 'react-stripe-checkout'
-import { stripeKey } from '../../constants/stripe.js'
 import { logo } from '../../styles/images/realsies.png'
 
 export default class Add extends Component {
@@ -86,7 +85,7 @@ export default class Add extends Component {
                   this.props.closeAddCardModal()
                 }}
                 currency={'USD'}
-                stripeKey={stripeKey}
+                stripeKey={process.env.REACT_APP_stripeKey}
                 image={logo}
                 panelLabel="Commit"
                 label="Enter Card Details"
