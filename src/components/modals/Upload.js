@@ -1,57 +1,70 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { uploadDeliverable } from '../../helpers/crud.js';
-import Close from '../../styles/images/close.js';
-import Dropzone from 'react-dropzone';
-import Upload from '../../styles/images/Upload.js';
-import { auth, storage } from '../../constants/firebase.js';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { uploadDeliverable } from '../../helpers/crud.js'
+import Close from '../../styles/images/close.js'
+import Dropzone from 'react-dropzone'
+import Upload from '../../styles/images/Upload.js'
+import { auth, storage } from '../../constants/firebase.js'
 
 export default class UploadDeliverable extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      upload: null
-    };
+  state = {
+    upload: null,
+    errors: {},
+    isSubmitting: false
   }
 
   handleUrl = e => {
     this.setState({
-      url: e.target.value
-    });
-  };
+      url: e.target.value,
+      errors: { ...this.state.errors, url: null }
+    })
+  }
 
   handleUpload = files => {
-    const file = files[0];
+    const file = files[0]
     const uploadTask = storage
       .ref('/deliverables')
       .child(auth.currentUser.uid)
       .child(file.name)
-      .put(file, { contentType: file.type });
+      .put(file, { contentType: file.type })
     uploadTask.on('state_changed', snapshot => {
       this.setState({
         transferCurrent: snapshot.bytesTransferred,
         transferTotal: snapshot.totalBytes
-      });
-    });
+      })
+    })
     uploadTask
       .then(snapshot => {
         this.setState({
-          upload: snapshot.downloadURL
-        });
+          upload: snapshot.downloadURL,
+          errors: { ...this.state.errors, upload: null }
+        })
       })
-      .catch(error => console.error(error));
-  };
+      .catch(error => console.error(error))
+  }
 
   handleSubmit = async () => {
+    this.setState({ isSubmitting: true })
+    const errors = validate({
+      upload: this.state.upload,
+      url: this.state.url
+    })
+    const anyError = Object.keys(errors).some(x => errors[x])
+    if (anyError) {
+      this.setState({ errors, isSubmitting: false })
+      return
+    }
+
     await uploadDeliverable(
       this.state.upload,
       this.state.url,
       this.props.taskId
-    );
-    this.props.closeUploadModal();
-  };
+    )
+    this.props.closeUploadModal()
+  }
 
   render() {
+    const errors = this.state.errors
     return (
       <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
         <div className="flex mxc cxc w-100 h-100">
@@ -89,7 +102,7 @@ export default class UploadDeliverable extends Component {
                   />
                 )}
             </Dropzone>
-
+            {errors.base ? <p className="red">{errors.base}</p> : null}
             <input
               type="submit"
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 db ma4 center"
@@ -98,6 +111,16 @@ export default class UploadDeliverable extends Component {
           </div>
         </div>
       </div>
-    );
+    )
+  }
+}
+
+function validate(inputs) {
+  return {
+    base:
+      (inputs.url && inputs.url.length > 0) ||
+      (inputs.upload && inputs.upload.length > 0)
+        ? null
+        : 'Please add atleast one field.'
   }
 }

@@ -6,6 +6,7 @@
     "firebase-functions": "^0.5.7",
     "mailgun-js": "^0.13.1",
     "nodemailer": "^4.1.0",
+    "secure-compare": "^3.0.1",
     "stripe": "^4.23.1"
   },
   "private": true

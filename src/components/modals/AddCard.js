@@ -41,10 +41,6 @@ export default class Add extends Component {
       .then(snap => this.setState({ taskDetails: snap.val() }))
   }
 
-  handleEmailChange = e => this.setState({ client: e })
-  handleDeliverableChange = e => this.setState({ deliverable: e })
-  handleDeadlineChange = e => this.setState({ deadline: e })
-
   render() {
     return (
       <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
