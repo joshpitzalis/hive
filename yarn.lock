@@ -2027,10 +2027,6 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-data.task@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/data.task/-/data.task-3.1.1.tgz#e985f5bedadd926b2d63c1a5d2076cff917a52ad"
-
 date-fns@^1.27.2:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
@@ -5708,7 +5704,7 @@ querystringify@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-1.0.0.tgz#6286242112c5b712fa654e526652bf6a13ff05cb"
 
-ramda@0.24.1, ramda@^0.24.1:
+ramda@0.24.1:
   version "0.24.1"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.24.1.tgz#c3b7755197f35b8dc3502228262c4c91ddb6b857"
 
@@ -5801,6 +5797,12 @@ react-error-overlay@^1.0.9:
     react-dev-utils "^3.0.2"
     settle-promise "1.0.0"
     source-map "0.5.6"
+
+react-ga@^2.3.5:
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-2.3.5.tgz#7c3d0c530b2bbe64ceb1faa79be340685aa84a9a"
+  dependencies:
+    object-assign "^4.1.1"
 
 react-router-dom@^4.1.1:
   version "4.1.1"
@@ -6223,15 +6225,6 @@ restore-cursor@^2.0.0:
     onetime "^2.0.0"
     signal-exit "^3.0.2"
 
-revalidation@^0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/revalidation/-/revalidation-0.12.1.tgz#fd066867b7dde3eca14e2504ade883fadd0c95e6"
-  dependencies:
-    data.task "^3.1.1"
-    hoist-non-react-statics "^1.2.0"
-    ramda "^0.24.1"
-    spected "^0.5.0"
-
 right-align@^0.1.1:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/right-align/-/right-align-0.1.3.tgz#61339b722fe6a3515689210d24e14c96148613ef"
@@ -6546,12 +6539,6 @@ spdy@^3.4.1:
     safe-buffer "^5.0.1"
     select-hose "^2.0.0"
     spdy-transport "^2.0.18"
-
-spected@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/spected/-/spected-0.5.0.tgz#0bf56bb8b9a13c0733e078d320fb7180921c2259"
-  dependencies:
-    ramda "^0.24.1"
 
 sprintf-js@~1.0.2:
   version "1.0.3"
