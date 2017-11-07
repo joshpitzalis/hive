@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "hive-3027b"
+    "production": "hive-3027b",
+    "staging": "notforrealsies-f5b75"
   }
 }
+

@@ -1,21 +1,21 @@
-import React, { Component } from 'react'
-import { login, resetPassword } from '../helpers/auth'
-import { Link } from 'react-router-dom'
+import React, { Component } from 'react';
+import { login, resetPassword } from '../helpers/auth';
+import { Link } from 'react-router-dom';
 
 function setErrorMsg(error) {
   return {
     loginMessage: error
-  }
+  };
 }
 
 export default class Login extends Component {
-  state = { loginMessage: null }
+  state = { loginMessage: null };
   handleSubmit = e => {
-    e.preventDefault()
+    e.preventDefault();
     login(this.email.value, this.pw.value).catch(error => {
-      this.setState(setErrorMsg('Invalid username/password.'))
-    })
-  }
+      this.setState(setErrorMsg('Invalid username/password.'));
+    });
+  };
   resetPassword = () => {
     resetPassword(this.email.value)
       .then(() =>
@@ -23,8 +23,8 @@ export default class Login extends Component {
           setErrorMsg(`Password reset email sent to ${this.email.value}.`)
         )
       )
-      .catch(error => this.setState(setErrorMsg(`Email address not found.`)))
-  }
+      .catch(error => this.setState(setErrorMsg(`Email address not found.`)));
+  };
   render() {
     return (
       <form className="measure center" onSubmit={this.handleSubmit}>
@@ -54,7 +54,7 @@ export default class Login extends Component {
               ref={pw => (this.pw = pw)}
             />
           </div>
-          {this.state.loginMessage &&
+          {this.state.loginMessage && (
             <div className="alert alert-danger" role="alert">
               <span
                 className="glyphicon glyphicon-exclamation-sign"
@@ -65,19 +65,24 @@ export default class Login extends Component {
               <a href="#" onClick={this.resetPassword} className="alert-link">
                 Forgot Password?
               </a>
-            </div>}
+            </div>
+          )}
         </fieldset>
         <div className="">
           <input
             className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
             type="submit"
-            value="Sign in"
+            value="Log in"
+            data-test="loginButton"
           />
         </div>
         <div className="lh-copy mt3">
-          <Link to="/register" href="#0" className="f6 link dim black db">
-            Sign up
-          </Link>
+          {/* <Link to="/register" href="#0" className="f6 link dim black db">
+            Sign Up
+          </Link> */}
+          <a href="https://www.realsies.com/" className="f6 link dim black db">
+            Sign Up
+          </a>
           <a
             href="#0"
             className="f6 link dim black db"
@@ -87,6 +92,6 @@ export default class Login extends Component {
           </a>
         </div>
       </form>
-    )
+    );
   }
 }

@@ -1,21 +1,22 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { uploadDeliverable } from '../helpers/database.js'
-import Close from '../styles/images/close.js'
+import { uploadDeliverable } from '../../helpers/crud.js'
+import Close from '../../styles/images/close.js'
 import Dropzone from 'react-dropzone'
-import Upload from '../styles/images/Upload.js'
-import { auth, storage } from '../constants/firebase.js'
+import Upload from '../../styles/images/Upload.js'
+import { auth, storage } from '../../constants/firebase.js'
 
 export default class UploadDeliverable extends Component {
-  static propTypes = {}
-
   state = {
-    upload: null
+    upload: null,
+    errors: {},
+    isSubmitting: false
   }
 
   handleUrl = e => {
     this.setState({
-      url: e.target.value
+      url: e.target.value,
+      errors: { ...this.state.errors, url: null }
     })
   }
 
@@ -35,25 +36,42 @@ export default class UploadDeliverable extends Component {
     uploadTask
       .then(snapshot => {
         this.setState({
-          upload: snapshot.downloadURL
+          upload: snapshot.downloadURL,
+          errors: { ...this.state.errors, upload: null }
         })
       })
       .catch(error => console.error(error))
   }
 
-  handleSubmit = () => {
-    uploadDeliverable(this.state.upload, this.state.url, this.props.taskId)
-    this.props.toggleUploadModal()
+  handleSubmit = async () => {
+    this.setState({ isSubmitting: true })
+    const errors = validate({
+      upload: this.state.upload,
+      url: this.state.url
+    })
+    const anyError = Object.keys(errors).some(x => errors[x])
+    if (anyError) {
+      this.setState({ errors, isSubmitting: false })
+      return
+    }
+
+    await uploadDeliverable(
+      this.state.upload,
+      this.state.url,
+      this.props.taskId
+    )
+    this.props.closeUploadModal()
   }
 
   render() {
+    const errors = this.state.errors
     return (
       <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
         <div className="flex mxc cxc w-100 h-100">
           <div className="bg-white pa3 w5 w-40-ns tc">
             <div
               className="tr dim pointer"
-              onClick={this.props.toggleUploadModal}
+              onClick={() => this.props.closeUploadModal()}
             >
               <Close />
             </div>
@@ -76,14 +94,15 @@ export default class UploadDeliverable extends Component {
               </div>
               <p>Drag files here to upload.</p>
               {this.state.transferCurrent !== 0 &&
-                this.state.transferCurrent !== this.state.transferTotal &&
-                <progress
-                  value={this.state.transferCurrent}
-                  max={this.state.transferTotal}
-                  className="w-100"
-                />}
+                this.state.transferCurrent !== this.state.transferTotal && (
+                  <progress
+                    value={this.state.transferCurrent}
+                    max={this.state.transferTotal}
+                    className="w-100"
+                  />
+                )}
             </Dropzone>
-
+            {errors.base ? <p className="red">{errors.base}</p> : null}
             <input
               type="submit"
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 db ma4 center"
@@ -93,5 +112,15 @@ export default class UploadDeliverable extends Component {
         </div>
       </div>
     )
+  }
+}
+
+function validate(inputs) {
+  return {
+    base:
+      (inputs.url && inputs.url.length > 0) ||
+      (inputs.upload && inputs.upload.length > 0)
+        ? null
+        : 'Please add atleast one field.'
   }
 }

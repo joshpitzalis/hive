@@ -1,106 +1,168 @@
 import React, { Component } from 'react'
-import Deliverable from './Deliverables.js'
-import Add from './Add'
-import Upload from './Upload'
+import Task from './tasks/Sent'
+import Pending from './tasks/Pending'
+import Active from './tasks/Active'
+import Deliverable from './tasks/Deliverable'
+import Add from './modals/Add'
+import AddCard from './modals/AddCard'
+import Upload from './modals/Upload'
 import { firebaseAuth, ref } from '../constants/firebase.js'
+import { Button, DisplayText } from '@shopify/polaris'
 
 export default class Dashboard extends Component {
-  state = {
-    add: false,
-    deliver: false
+  constructor(props) {
+    super(props)
+    this.state = {
+      add: false,
+      deliver: false,
+      pendingTasks: null,
+      tasksYouSent: null,
+      activeTasks: null,
+      showCardEntryForm: false,
+      taskId: null,
+      deliverableTaskId: null
+    }
+
+    this.toggleAddModal = this.toggleAddModal.bind(this)
   }
 
   componentDidMount() {
-    this.getTasksINeedToDo()
-    this.getTasksIWillBeGiven()
+    this.getActiveTasks()
+    this.getTasksSent()
+    this.getPendingTasks()
   }
 
-  toggleAddModal = () => {
+  toggleAddModal() {
     this.setState({ add: !this.state.add })
   }
 
-  toggleUploadModal = () => {
-    this.setState({ deliver: !this.state.deliver })
+  toggleAddCardModal = () => {
+    this.setState({ showCardEntryForm: !this.state.showCardEntryForm })
   }
 
-  getTasksINeedToDo = () => {
-    ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/tasks`)
-      .on('value', snap => this.setState({ thingsYouNeedToDo: snap.val() }))
+  toggleUploadModal = taskId => {
+    console.log('dog')
+    this.setState({ deliver: !this.state.deliver, deliverableTaskId: taskId })
   }
 
-  getTasksIWillBeGiven = () => {
+  getActiveTasks = () => {
     ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/beGiven`)
-      .on('value', snap => this.setState({ ThingsYouWillGet: snap.val() }))
+      .child(`/users/${firebaseAuth().currentUser.uid}/active`)
+      .on('value', snap => this.setState({ activeTasks: snap.val() }))
   }
 
-  handleArchive = async taskId => {
-    const task = await ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/beGiven/${taskId}`)
-      .once('value')
-      .then(snap => snap.val())
-      .catch(error => console.error(error))
+  getTasksSent = () => {
     ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/beGiven/${taskId}`)
-      .remove()
-      .catch(error => console.error(error))
+      .child(`/users/${firebaseAuth().currentUser.uid}/sent`)
+      .on('value', snap => this.setState({ tasksYouSent: snap.val() }))
+  }
+
+  getPendingTasks = () => {
     ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/archived`)
-      .push(task)
-      .catch(error => console.error(error))
+      .child(`/users/${firebaseAuth().currentUser.uid}/pending`)
+      .on('value', snap => this.setState({ pendingTasks: snap.val() }))
+  }
+
+  handleShowCardEntryForm = taskId => {
+    this.setState({ showCardEntryForm: true, taskId })
   }
 
   render() {
-    const ThingsYouWillGet =
-      this.state.ThingsYouWillGet &&
-      Object.keys(this.state.ThingsYouWillGet).map(item =>
-        <Deliverable
-          key={this.state.ThingsYouWillGet[item].taskId}
-          ready={this.state.ThingsYouWillGet[item].ready}
-          title={this.state.ThingsYouWillGet[item].title}
-          from={this.state.ThingsYouWillGet[item].from}
-          due={this.state.ThingsYouWillGet[item].due}
-          taskId={this.state.ThingsYouWillGet[item].taskId}
-          file={this.state.ThingsYouWillGet[item].file}
-          url={this.state.ThingsYouWillGet[item].url}
-          handleArchive={this.handleArchive}
+    const TasksYouSent =
+      this.state.tasksYouSent &&
+      Object.values(this.state.tasksYouSent).map((task, index) => (
+        <Task
+          key={index}
+          declined={task.declined}
+          title={task.deliverable}
+          client={task.client}
+          due={task.deadline}
+          taskId={task.taskId}
+          file={task.file}
+          url={task.url}
+          accepted={task.accepted}
+          ready={task.ready}
         />
-      )
+      ))
 
-    const ThingsYouNeedToDo =
-      this.state.thingsYouNeedToDo &&
-      Object.keys(this.state.thingsYouNeedToDo).map(item =>
-        <Deliverable
-          key={this.state.thingsYouNeedToDo[item].taskId}
-          ready={false}
-          myStuff={true}
-          title={this.state.thingsYouNeedToDo[item].deliverable}
-          from={this.state.thingsYouNeedToDo[item].client}
-          due={this.state.thingsYouNeedToDo[item].deadline}
-          toggleUploadModal={this.toggleUploadModal}
-          deliver={this.state.deliver}
-          taskId={this.state.thingsYouNeedToDo[item].taskId}
+    const PendingTasks =
+      this.state.pendingTasks &&
+      Object.values(this.state.pendingTasks).map(task => (
+        <Pending
+          key={task.taskId}
+          title={task.title}
+          from={task.from}
+          due={task.deadline}
+          taskId={task.taskId}
+          createdAt={task.createdAt}
+          showCardEntryForm={this.handleShowCardEntryForm}
         />
-      )
+      ))
+
+    const ActiveTasks =
+      this.state.activeTasks &&
+      Object.values(this.state.activeTasks).map((task, index) => (
+        <Active
+          key={index}
+          title={task.title}
+          from={task.client}
+          due={task.due}
+          taskId={task.taskId}
+          createdAt={task.createdAt}
+          ready={task.ready}
+          toggleUploadModal={this.toggleUploadModal}
+          archived={task.archived}
+        />
+      ))
+
     return (
-      <div className="mw6 center tc">
+      <div className="mw8 center tc">
         {this.state.add && <Add closeAddModal={this.toggleAddModal} />}
-        {/* {this.state.deliver &&
-        <Upload closeUploadModal={this.toggleUploadModal} />} */}
-        <div className="pv3">
-          {ThingsYouWillGet}
-        </div>
-        {ThingsYouNeedToDo && <p className="f4 tc mv3 b">Do</p>}
-        <div className="pv3">
-          {ThingsYouNeedToDo}
-        </div>
-        <button
-          className="link dim dib f6 button-reset bg-white ba b--black-10 dim pointer pv1 black-60 mv5"
-          onClick={this.toggleAddModal}
-        >
-          Promise To Do Something
-        </button>
+        {this.state.showCardEntryForm && (
+          <AddCard
+            closeAddCardModal={this.toggleAddCardModal}
+            taskId={this.state.taskId}
+            toggleCheckout={this.toggleCheckout}
+          />
+        )}
+
+        {this.state.deliver && (
+          <Upload
+            closeUploadModal={this.toggleUploadModal}
+            taskId={this.state.deliverableTaskId}
+          />
+        )}
+        <Button primary size="large" onClick={this.toggleAddModal}>
+          Send Someone A Realsie
+        </Button>
+        {PendingTasks && (
+          <section>
+            <br />
+            <br />
+            <DisplayText size="extraLarge">
+              You Have Been Asked To...
+            </DisplayText>
+            <div className="pv4">{PendingTasks}</div>
+          </section>
+        )}
+
+        {ActiveTasks && (
+          <section>
+            <br />
+            <br />
+            <DisplayText size="extraLarge">You Agreed To...</DisplayText>
+            <div className="pv4">{ActiveTasks}</div>
+          </section>
+        )}
+
+        {TasksYouSent && (
+          <div>
+            <br />
+            <br />
+            <DisplayText size="extraLarge">You Sent...</DisplayText>
+            <div className="pv4">{TasksYouSent}</div>
+          </div>
+        )}
       </div>
     )
   }

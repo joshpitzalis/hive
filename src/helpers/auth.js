@@ -15,3 +15,12 @@ export function login(email, pw) {
 export function resetPassword(email) {
   return firebaseAuth().sendPasswordResetEmail(email)
 }
+
+export function deleteUser(currentUser) {
+  firebaseAuth()
+    .currentUser.delete()
+    .then(console.log(currentUser))
+    .catch(error => {
+      console.error(error)
+    })
+}

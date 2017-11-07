@@ -37,7 +37,7 @@ export default class Register extends Component {
               ref={pw => (this.pw = pw)}
             />
           </div>
-          {this.state.registerError &&
+          {this.state.registerError && (
             <div className="alert alert-danger" role="alert">
               <span
                 className="glyphicon glyphicon-exclamation-sign"
@@ -45,8 +45,13 @@ export default class Register extends Component {
               />
               <span className="sr-only">Error:</span>
               &nbsp;{this.state.registerError}
-            </div>}
-          <button type="submit" className="btn btn-primary">
+            </div>
+          )}
+          <button
+            type="submit"
+            data-test="registerButton"
+            className="btn btn-primary"
+          >
             Register
           </button>
         </form>
