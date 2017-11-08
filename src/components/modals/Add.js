@@ -135,6 +135,6 @@ function validate(inputs) {
       inputs.deliverable &&
       inputs.deliverable.length > 0
         ? null
-        : 'Please complete all fields.'
+        : 'Please fill out all the fields.'
   }
 }
