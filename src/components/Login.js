@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
-import { login, resetPassword } from '../helpers/auth';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react'
+import { login, resetPassword } from '../helpers/auth'
 
 function setErrorMsg(error) {
   return {
     loginMessage: error
-  };
+  }
 }
 
 export default class Login extends Component {
-  state = { loginMessage: null };
+  state = { loginMessage: null }
   handleSubmit = e => {
-    e.preventDefault();
+    e.preventDefault()
     login(this.email.value, this.pw.value).catch(error => {
-      this.setState(setErrorMsg('Invalid username/password.'));
-    });
-  };
+      this.setState(setErrorMsg('Invalid username/password.'))
+    })
+  }
   resetPassword = () => {
     resetPassword(this.email.value)
       .then(() =>
@@ -23,8 +22,8 @@ export default class Login extends Component {
           setErrorMsg(`Password reset email sent to ${this.email.value}.`)
         )
       )
-      .catch(error => this.setState(setErrorMsg(`Email address not found.`)));
-  };
+      .catch(error => this.setState(setErrorMsg(`Email address not found.`)))
+  }
   render() {
     return (
       <form className="measure center" onSubmit={this.handleSubmit}>
@@ -55,16 +54,13 @@ export default class Login extends Component {
             />
           </div>
           {this.state.loginMessage && (
-            <div className="alert alert-danger" role="alert">
+            <div className="alert alert-danger red" role="alert">
               <span
                 className="glyphicon glyphicon-exclamation-sign"
                 aria-hidden="true"
               />
               <span className="sr-only">Error:</span>
-              &nbsp;{this.state.loginMessage}{' '}
-              <a href="#" onClick={this.resetPassword} className="alert-link">
-                Forgot Password?
-              </a>
+              &nbsp;{this.state.loginMessage}
             </div>
           )}
         </fieldset>
@@ -92,6 +88,6 @@ export default class Login extends Component {
           </a>
         </div>
       </form>
-    );
+    )
   }
 }

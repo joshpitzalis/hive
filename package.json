@@ -12,6 +12,7 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-dropzone": "^3.13.3",
+    "react-ga": "^2.3.5",
     "react-router-dom": "^4.1.1",
     "react-stripe-checkout": "^2.4.0",
     "react-stripe-elements": "^0.0.6",
@@ -35,6 +36,6 @@
     "build": "node node_modules/react-scripts/scripts/build.js",
     "eject": "node node_modules/react-scripts/scripts/eject.js",
     "coverage": "yarn run jest -- --coverage",
-    "cypress": "cypress open"
+    "tests": "cypress open"
   }
 }

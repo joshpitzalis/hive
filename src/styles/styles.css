@@ -1,1 +1,14 @@
+html, body, #root {
+  height: 100%;
+}
+main {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+}
 
+footer {
+grid-row-start: 4;
+  grid-row-end: 5;
+
+}

@@ -10,6 +10,10 @@ import Dashboard from './components/Dashboard'
 import { firebaseAuth } from './constants/firebase'
 import registerServiceWorker from './registerServiceWorker'
 import './styles/styles.css'
+import ReactGA from 'react-ga'
+
+ReactGA.initialize('UA-86031259-4')
+ReactGA.pageview(window.location.pathname + window.location.search)
 
 class App extends Component {
   constructor (props) {
@@ -40,40 +44,40 @@ class App extends Component {
   }
   render () {
     return this.state.loading === true ? (
-      <h1 className="tc">Loading...</h1>
+      <h1 className="tc pv5 f1">Loading...</h1>
     ) : (
       <BrowserRouter>
         <main>
           <PropsRoute path="/" component={Nav} authed={this.state.authed} />
           <Switch>
-            <div className="pa3">
-              <Route path="/" exact component={Home} />
+            <Route path="/" exact component={Home} />
+            <PublicRoute
+              authed={this.state.authed}
+              path="/login"
+              component={Login}
+            />
+            {process.env.NODE_ENV === 'production' ? null : (
               <PublicRoute
                 authed={this.state.authed}
-                path="/login"
-                component={Login}
+                path="/register"
+                component={Register}
               />
-              {process.env.NODE_ENV === 'production' ? null : (
-                <PublicRoute
-                  authed={this.state.authed}
-                  path="/register"
-                  component={Register}
-                />
-              )}
-              <PrivateRoute
-                authed={this.state.authed}
-                path="/dashboard"
-                component={Dashboard}
-              />
-              <PrivateRoute
-                authed={this.state.authed}
-                path="/settings"
-                component={Settings}
-                user={firebaseAuth.currentUser}
-              />
-            </div>
+            )}
+            <PrivateRoute
+              authed={this.state.authed}
+              path="/dashboard"
+              component={Dashboard}
+            />
+            <PrivateRoute
+              authed={this.state.authed}
+              path="/settings"
+              component={Settings}
+              user={firebaseAuth.currentUser}
+            />
+
             <Route render={() => <h3>No Match</h3>} />
           </Switch>
+          <Footer />
         </main>
       </BrowserRouter>
     )
@@ -125,6 +129,22 @@ function PropsRoute ({ component, ...rest }) {
     />
   )
 }
+
+const Footer = () => (
+  <footer className="w-100 pv4 tc">
+    <p className="f4">
+      If you find a bug please{' '}
+      <a
+        href="https://twitter.com/joshpitzalis"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        let me know
+      </a>.
+    </p>
+    <p className="f6">Version 0.0.3</p>
+  </footer>
+)
 
 ReactDOM.render(<App />, document.getElementById('root'))
 registerServiceWorker()

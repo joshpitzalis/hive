@@ -8,32 +8,14 @@ import AddCard from './modals/AddCard'
 import Upload from './modals/Upload'
 import { firebaseAuth, ref } from '../constants/firebase.js'
 import { Button, DisplayText } from '@shopify/polaris'
+import { withState, lifecycle, compose } from 'recompose'
 
 export default class Dashboard extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      add: false,
-      deliver: false,
-      pendingTasks: null,
-      tasksYouSent: null,
-      activeTasks: null,
-      showCardEntryForm: false,
-      taskId: null,
-      deliverableTaskId: null
-    }
-
-    this.toggleAddModal = this.toggleAddModal.bind(this)
-  }
-
-  componentDidMount() {
-    this.getActiveTasks()
-    this.getTasksSent()
-    this.getPendingTasks()
-  }
-
-  toggleAddModal() {
-    this.setState({ add: !this.state.add })
+  state = {
+    deliver: false,
+    showCardEntryForm: false,
+    taskId: null,
+    deliverableTaskId: null
   }
 
   toggleAddCardModal = () => {
@@ -41,26 +23,7 @@ export default class Dashboard extends Component {
   }
 
   toggleUploadModal = taskId => {
-    console.log('dog')
     this.setState({ deliver: !this.state.deliver, deliverableTaskId: taskId })
-  }
-
-  getActiveTasks = () => {
-    ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/active`)
-      .on('value', snap => this.setState({ activeTasks: snap.val() }))
-  }
-
-  getTasksSent = () => {
-    ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/sent`)
-      .on('value', snap => this.setState({ tasksYouSent: snap.val() }))
-  }
-
-  getPendingTasks = () => {
-    ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/pending`)
-      .on('value', snap => this.setState({ pendingTasks: snap.val() }))
   }
 
   handleShowCardEntryForm = taskId => {
@@ -68,56 +31,12 @@ export default class Dashboard extends Component {
   }
 
   render() {
-    const TasksYouSent =
-      this.state.tasksYouSent &&
-      Object.values(this.state.tasksYouSent).map((task, index) => (
-        <Task
-          key={index}
-          declined={task.declined}
-          title={task.deliverable}
-          client={task.client}
-          due={task.deadline}
-          taskId={task.taskId}
-          file={task.file}
-          url={task.url}
-          accepted={task.accepted}
-          ready={task.ready}
-        />
-      ))
-
-    const PendingTasks =
-      this.state.pendingTasks &&
-      Object.values(this.state.pendingTasks).map(task => (
-        <Pending
-          key={task.taskId}
-          title={task.title}
-          from={task.from}
-          due={task.deadline}
-          taskId={task.taskId}
-          createdAt={task.createdAt}
-          showCardEntryForm={this.handleShowCardEntryForm}
-        />
-      ))
-
-    const ActiveTasks =
-      this.state.activeTasks &&
-      Object.values(this.state.activeTasks).map((task, index) => (
-        <Active
-          key={index}
-          title={task.title}
-          from={task.client}
-          due={task.due}
-          taskId={task.taskId}
-          createdAt={task.createdAt}
-          ready={task.ready}
-          toggleUploadModal={this.toggleUploadModal}
-          archived={task.archived}
-        />
-      ))
-
     return (
       <div className="mw8 center tc">
-        {this.state.add && <Add closeAddModal={this.toggleAddModal} />}
+        <SendARealsie
+          AddModalIsOpen={this.props.AddModalIsOpen}
+          toggleAddModal={this.props.toggleAddModal}
+        />
         {this.state.showCardEntryForm && (
           <AddCard
             closeAddCardModal={this.toggleAddCardModal}
@@ -125,45 +44,142 @@ export default class Dashboard extends Component {
             toggleCheckout={this.toggleCheckout}
           />
         )}
-
+        <PendingTasks handleShowCardEntryForm={this.handleShowCardEntryForm} />
         {this.state.deliver && (
           <Upload
             closeUploadModal={this.toggleUploadModal}
             taskId={this.state.deliverableTaskId}
           />
         )}
-        <Button primary size="large" onClick={this.toggleAddModal}>
-          Send Someone A Realsie
-        </Button>
-        {PendingTasks && (
-          <section>
-            <br />
-            <br />
-            <DisplayText size="extraLarge">
-              You Have Been Asked To...
-            </DisplayText>
-            <div className="pv4">{PendingTasks}</div>
-          </section>
-        )}
-
-        {ActiveTasks && (
-          <section>
-            <br />
-            <br />
-            <DisplayText size="extraLarge">You Agreed To...</DisplayText>
-            <div className="pv4">{ActiveTasks}</div>
-          </section>
-        )}
-
-        {TasksYouSent && (
-          <div>
-            <br />
-            <br />
-            <DisplayText size="extraLarge">You Sent...</DisplayText>
-            <div className="pv4">{TasksYouSent}</div>
-          </div>
-        )}
+        <ActiveTasks toggleUploadModal={this.toggleUploadModal} />
+        <TasksYouSent />
       </div>
     )
   }
 }
+
+// shows tasks you sent
+export const TasksYouSent = lifecycle({
+  componentDidMount() {
+    ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/sent`)
+      .on('value', snap => this.setState({ tasks: snap.val() }))
+  }
+})(({ tasks }) => (
+  <div>
+    {tasks && (
+      <div>
+        <br />
+        <br />
+        <DisplayText size="extraLarge">You Sent...</DisplayText>
+        <div className="pv4">
+          {Object.values(tasks).map((task, index) => (
+            <Task
+              key={index}
+              declined={task.declined}
+              title={task.deliverable}
+              client={task.client}
+              due={task.deadline}
+              taskId={task.taskId}
+              file={task.file}
+              url={task.url}
+              accepted={task.accepted}
+              ready={task.ready}
+            />
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+))
+
+// shows active tasks
+export const ActiveTasks = lifecycle({
+  componentDidMount() {
+    ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/active`)
+      .on('value', snap => this.setState({ tasks: snap.val() }))
+  }
+})(({ tasks, toggleUploadModal }) => (
+  <section>
+    {tasks && (
+      <div>
+        <br />
+        <br />
+        <DisplayText size="extraLarge">You Agreed To...</DisplayText>
+        <div className="pv4">
+          {tasks &&
+            Object.values(tasks).map((task, index) => (
+              <Active
+                key={index}
+                title={task.title}
+                from={task.client}
+                due={task.due}
+                taskId={task.taskId}
+                createdAt={task.createdAt}
+                ready={task.ready}
+                toggleUploadModal={toggleUploadModal}
+                archived={task.archived}
+              />
+            ))}
+        </div>
+      </div>
+    )}
+  </section>
+))
+
+// shows pending tasks
+export const PendingTasks = lifecycle({
+  componentDidMount() {
+    ref
+      .child(`/users/${firebaseAuth().currentUser.uid}/pending`)
+      .on('value', snap => this.setState({ tasks: snap.val() }))
+  }
+})(({ tasks, handleShowCardEntryForm }) => (
+  <section>
+    {tasks && (
+      <div>
+        <br />
+        <br />
+        {tasks && (
+          <DisplayText size="extraLarge">You Have Been Asked To...</DisplayText>
+        )}
+        <div className="pv4">
+          {tasks &&
+            Object.values(tasks).map(task => (
+              <Pending
+                key={task.taskId}
+                title={task.title}
+                from={task.from}
+                due={task.due}
+                taskId={task.taskId}
+                createdAt={task.createdAt}
+                showCardEntryForm={handleShowCardEntryForm}
+              />
+            ))}
+        </div>
+      </div>
+    )}
+  </section>
+))
+
+// this component shows a create realsie modal
+export const SendARealsie = withState(
+  'AddModalIsOpen',
+  'toggleAddModal',
+  false
+)(({ AddModalIsOpen, toggleAddModal }) => (
+  <div>
+    {AddModalIsOpen && (
+      <Add closeAddModal={() => toggleAddModal(!AddModalIsOpen)} />
+    )}
+
+    <Button
+      primary
+      size="large"
+      onClick={() => toggleAddModal(!AddModalIsOpen)}
+    >
+      Send Someone A Realsie
+    </Button>
+  </div>
+))

@@ -10,7 +10,7 @@ export default class Add extends Component {
   state = {
     deliverable: '',
     client: '',
-    deadline: '',
+    deadline: new Date().toISOString().split('T')[0],
     errors: {},
     isSubmitting: false
   }
@@ -36,6 +36,8 @@ export default class Add extends Component {
     })
 
   handleSubmit = () => {
+    console.log('state', this.state)
+
     this.setState({ isSubmitting: true })
     const errors = validate({
       email: this.state.client,
@@ -100,7 +102,7 @@ export default class Add extends Component {
                     Submitting...
                   </Button>
                 ) : (
-                  <Button primary onClick={this.handleSubmit}>
+                  <Button primary submit onClick={this.handleSubmit}>
                     Send Realsie to{' '}
                     {this.state.client ? this.state.client : `...`}
                   </Button>
@@ -124,9 +126,11 @@ function validate(inputs) {
           : null,
 
     date:
-      inputs.date && new Date(inputs.date) > new Date()
+      inputs.date &&
+      new Date(inputs.date).toISOString().split('T')[0] >=
+        new Date().toISOString().split('T')[0]
         ? null
-        : 'The deadline cannot be in the past. That would be unfair.',
+        : `The deadline cannot be in the past. That's not fair.`,
     base:
       inputs.date &&
       inputs.date.length > 0 &&
@@ -135,6 +139,6 @@ function validate(inputs) {
       inputs.deliverable &&
       inputs.deliverable.length > 0
         ? null
-        : 'Please complete all fields.'
+        : 'Please fill out all the fields.'
   }
 }

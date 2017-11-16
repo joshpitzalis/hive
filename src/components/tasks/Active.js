@@ -1,23 +1,21 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { acceptChallenge, declineChallenge } from '../../helpers/crud';
-import { firebaseAuth, ref } from '../../constants/firebase.js';
-import { Card, Button } from '@shopify/polaris';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { acceptChallenge, declineChallenge } from '../../helpers/crud'
+import { firebaseAuth, ref } from '../../constants/firebase.js'
+import { Card, Button } from '@shopify/polaris'
 
 class Active extends Component {
   handleArchive = taskId => {
     ref
       .child(`users/${firebaseAuth().currentUser.uid}/active/${taskId}`)
       .update({ archived: true })
-      .catch(error => console.error(error));
-  };
+      .catch(error => console.error(error))
+  }
   render() {
-    const today = new Date().toISOString();
-    console.log('due', this.props.due);
-    console.log('today', today);
+    const today = new Date().toISOString()
 
     if (this.props.archived) {
-      return null;
+      return null
     }
     return (
       <Card
@@ -62,7 +60,7 @@ class Active extends Component {
           </div>
         )}
       </Card>
-    );
+    )
   }
 }
 
@@ -70,11 +68,11 @@ Active.propTypes = {
   title: PropTypes.string.isRequired,
   from: PropTypes.string.isRequired,
   due: PropTypes.string.isRequired
-};
+}
 Active.defaultProps = {
   title: 'Thing',
   from: 'Someone',
   due: 'Sometime'
-};
+}
 
-export default Active;
+export default Active

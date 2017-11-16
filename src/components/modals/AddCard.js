@@ -9,7 +9,8 @@ import {
   ButtonGroup,
   Button,
   FormLayout,
-  DisplayText
+  DisplayText,
+  Tooltip
 } from '@shopify/polaris'
 import StripeCheckout from 'react-stripe-checkout'
 import { logo } from '../../styles/images/realsies.png'
@@ -64,30 +65,31 @@ export default class Add extends Component {
               <Button plain onClick={() => this.props.closeAddCardModal()}>
                 Cancel
               </Button>
-              <StripeCheckout
-                name="Realsies"
-                description="Put your money where your mouth is."
-                email={this.state.taskDetails && this.state.taskDetails.from}
-                token={token => {
-                  acceptChallenge(
-                    this.props.taskId,
-                    this.state.taskDetails.deliverable,
-                    this.state.taskDetails.client,
-                    this.state.taskDetails.deadline,
-                    this.state.taskDetails.createdAt,
-                    this.state.taskDetails.sendersUid,
-                    token
-                  )
-                  this.props.closeAddCardModal()
-                }}
-                currency={'USD'}
-                stripeKey={process.env.REACT_APP_stripeKey}
-                image={logo}
-                panelLabel="Commit"
-                label="Enter Card Details"
-                opened={() => this.setState({ loading: true })}
-                closed={() => this.setState({ loading: false })}
-              />
+              <Tooltip content="The payment box might take a seconds or two to load up.">
+                <StripeCheckout
+                  name="Realsies"
+                  description="Put your money where your mouth is."
+                  email={this.state.taskDetails && this.state.taskDetails.from}
+                  token={token => {
+                    acceptChallenge(
+                      this.props.taskId,
+                      this.state.taskDetails.deliverable,
+                      this.state.taskDetails.client,
+                      this.state.taskDetails.deadline,
+                      this.state.taskDetails.createdAt,
+                      this.state.taskDetails.sendersUid,
+                      token
+                    )
+                    this.props.closeAddCardModal()
+                  }}
+                  currency={'USD'}
+                  stripeKey={process.env.REACT_APP_stripeKey}
+                  panelLabel="Commit"
+                  label={
+                    this.state.loading ? 'Loading...' : 'Enter Card Details'
+                  }
+                />
+              </Tooltip>
             </span>
           </div>
         </div>
