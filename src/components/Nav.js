@@ -3,13 +3,7 @@ import PropTypes from 'prop-types'
 import { logout } from '../helpers/auth'
 import { Link } from 'react-router-dom'
 import realsieLogo from '../styles/images/realsies.png'
-import {
-  Button,
-  ActionList,
-  Popover,
-  useLinkComponent,
-  Avatar
-} from '@shopify/polaris'
+import { Button, ActionList, Popover } from '@shopify/polaris'
 import { withState, setPropTypes } from 'recompose'
 
 const Nav = ({ authed }) => (
@@ -42,6 +36,10 @@ const Settings = withState(
         {
           content: 'Settings',
           url: '/settings'
+        },
+        {
+          content: 'Dashboard',
+          url: '/dashboard'
         },
         {
           content: 'Logout',

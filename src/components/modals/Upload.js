@@ -4,6 +4,7 @@ import { uploadDeliverable } from '../../helpers/crud.js'
 import Close from '../../styles/images/close.js'
 import Dropzone from 'react-dropzone'
 import Upload from '../../styles/images/Upload.js'
+import Complete from '../../styles/images/Complete.js'
 import { auth, storage } from '../../constants/firebase.js'
 
 export default class UploadDeliverable extends Component {
@@ -90,11 +91,15 @@ export default class UploadDeliverable extends Component {
               activeStyle={{ transform: 'scale(1.05)' }}
             >
               <div className="flex mxc w-100">
-                <Upload />
+                {this.state.upload ? <Complete /> : <Upload />}
               </div>
-              <p>Drag files here to upload.</p>
+              {this.state.upload ? (
+                <p>Drag another file here to replace.</p>
+              ) : (
+                <p>Drag files here to upload.</p>
+              )}
               {this.state.transferCurrent !== 0 &&
-                this.state.transferCurrent !== this.state.transferTotal && (
+                this.state.transferTotal && (
                   <progress
                     value={this.state.transferCurrent}
                     max={this.state.transferTotal}
@@ -102,6 +107,7 @@ export default class UploadDeliverable extends Component {
                   />
                 )}
             </Dropzone>
+
             {errors.base ? <p className="red">{errors.base}</p> : null}
             <input
               type="submit"

@@ -1,26 +1,17 @@
 import { firebaseAuth } from '../constants/firebase.js'
 
-export function auth(email, pw) {
+export function auth (email, pw) {
   return firebaseAuth().createUserWithEmailAndPassword(email, pw)
 }
 
-export function logout() {
+export function logout () {
   return firebaseAuth().signOut()
 }
 
-export function login(email, pw) {
+export function login (email, pw) {
   return firebaseAuth().signInWithEmailAndPassword(email, pw)
 }
 
-export function resetPassword(email) {
+export function resetPassword (email) {
   return firebaseAuth().sendPasswordResetEmail(email)
-}
-
-export function deleteUser(currentUser) {
-  firebaseAuth()
-    .currentUser.delete()
-    .then(console.log(currentUser))
-    .catch(error => {
-      console.error(error)
-    })
 }

@@ -67,13 +67,13 @@ export const TasksYouSent = lifecycle({
   }
 })(({ tasks }) => (
   <div>
-    <div>
-      <br />
-      <br />
-      {tasks && <DisplayText size="extraLarge">You Sent...</DisplayText>}
-      <div className="pv4">
-        {tasks &&
-          Object.values(tasks).map((task, index) => (
+    {tasks && (
+      <div>
+        <br />
+        <br />
+        <DisplayText size="extraLarge">You Sent...</DisplayText>
+        <div className="pv4">
+          {Object.values(tasks).map((task, index) => (
             <Task
               key={index}
               declined={task.declined}
@@ -87,8 +87,9 @@ export const TasksYouSent = lifecycle({
               ready={task.ready}
             />
           ))}
+        </div>
       </div>
-    </div>
+    )}
   </div>
 ))
 
@@ -101,25 +102,29 @@ export const ActiveTasks = lifecycle({
   }
 })(({ tasks, toggleUploadModal }) => (
   <section>
-    <br />
-    <br />
-    {tasks && <DisplayText size="extraLarge">You Agreed To...</DisplayText>}
-    <div className="pv4">
-      {tasks &&
-        Object.values(tasks).map((task, index) => (
-          <Active
-            key={index}
-            title={task.title}
-            from={task.client}
-            due={task.due}
-            taskId={task.taskId}
-            createdAt={task.createdAt}
-            ready={task.ready}
-            toggleUploadModal={toggleUploadModal}
-            archived={task.archived}
-          />
-        ))}
-    </div>
+    {tasks && (
+      <div>
+        <br />
+        <br />
+        <DisplayText size="extraLarge">You Agreed To...</DisplayText>
+        <div className="pv4">
+          {tasks &&
+            Object.values(tasks).map((task, index) => (
+              <Active
+                key={index}
+                title={task.title}
+                from={task.client}
+                due={task.due}
+                taskId={task.taskId}
+                createdAt={task.createdAt}
+                ready={task.ready}
+                toggleUploadModal={toggleUploadModal}
+                archived={task.archived}
+              />
+            ))}
+        </div>
+      </div>
+    )}
   </section>
 ))
 
@@ -128,29 +133,33 @@ export const PendingTasks = lifecycle({
   componentDidMount() {
     ref
       .child(`/users/${firebaseAuth().currentUser.uid}/pending`)
-      .on('value', snap => this.setState({ pendingTasks: snap.val() }))
+      .on('value', snap => this.setState({ tasks: snap.val() }))
   }
 })(({ tasks, handleShowCardEntryForm }) => (
   <section>
-    <br />
-    <br />
     {tasks && (
-      <DisplayText size="extraLarge">You Have Been Asked To...</DisplayText>
+      <div>
+        <br />
+        <br />
+        {tasks && (
+          <DisplayText size="extraLarge">You Have Been Asked To...</DisplayText>
+        )}
+        <div className="pv4">
+          {tasks &&
+            Object.values(tasks).map(task => (
+              <Pending
+                key={task.taskId}
+                title={task.title}
+                from={task.from}
+                due={task.due}
+                taskId={task.taskId}
+                createdAt={task.createdAt}
+                showCardEntryForm={handleShowCardEntryForm}
+              />
+            ))}
+        </div>
+      </div>
     )}
-    <div className="pv4">
-      {tasks &&
-        Object.values(this.state.pendingTasks).map(task => (
-          <Pending
-            key={task.taskId}
-            title={task.title}
-            from={task.from}
-            due={task.deadline}
-            taskId={task.taskId}
-            createdAt={task.createdAt}
-            showCardEntryForm={handleShowCardEntryForm}
-          />
-        ))}
-    </div>
   </section>
 ))
 

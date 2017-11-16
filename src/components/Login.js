@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { login, resetPassword } from '../helpers/auth'
-import { Link } from 'react-router-dom'
 
 function setErrorMsg(error) {
   return {
@@ -61,10 +60,7 @@ export default class Login extends Component {
                 aria-hidden="true"
               />
               <span className="sr-only">Error:</span>
-              &nbsp;{this.state.loginMessage}{' '}
-              <a href="#" onClick={this.resetPassword} className="alert-link">
-                Forgot Password?
-              </a>
+              &nbsp;{this.state.loginMessage}
             </div>
           )}
         </fieldset>

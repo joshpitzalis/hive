@@ -50,32 +50,31 @@ class App extends Component {
         <main>
           <PropsRoute path="/" component={Nav} authed={this.state.authed} />
           <Switch>
-            <article className="pa3">
-              <Route path="/" exact component={Home} />
+            <Route path="/" exact component={Home} />
+            <PublicRoute
+              authed={this.state.authed}
+              path="/login"
+              component={Login}
+            />
+            {process.env.NODE_ENV === 'production' ? null : (
               <PublicRoute
                 authed={this.state.authed}
-                path="/login"
-                component={Login}
+                path="/register"
+                component={Register}
               />
-              {process.env.NODE_ENV === 'production' ? null : (
-                <PublicRoute
-                  authed={this.state.authed}
-                  path="/register"
-                  component={Register}
-                />
-              )}
-              <PrivateRoute
-                authed={this.state.authed}
-                path="/dashboard"
-                component={Dashboard}
-              />
-              <PrivateRoute
-                authed={this.state.authed}
-                path="/settings"
-                component={Settings}
-                user={firebaseAuth.currentUser}
-              />
-            </article>
+            )}
+            <PrivateRoute
+              authed={this.state.authed}
+              path="/dashboard"
+              component={Dashboard}
+            />
+            <PrivateRoute
+              authed={this.state.authed}
+              path="/settings"
+              component={Settings}
+              user={firebaseAuth.currentUser}
+            />
+
             <Route render={() => <h3>No Match</h3>} />
           </Switch>
           <Footer />
@@ -135,7 +134,11 @@ const Footer = () => (
   <footer className="w-100 pv4 tc">
     <p className="f4">
       If you find a bug please{' '}
-      <a href="https://twitter.com/joshpitzalis" target="_blank">
+      <a
+        href="https://twitter.com/joshpitzalis"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         let me know
       </a>.
     </p>

@@ -1,5 +1,4 @@
 import React from 'react'
-import { deleteUser } from '../helpers/auth'
 import { Card, Layout, Banner } from '@shopify/polaris'
 import { firebaseAuth } from '../constants/firebase.js'
 import { compose, withState } from 'recompose'

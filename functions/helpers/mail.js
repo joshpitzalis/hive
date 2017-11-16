@@ -1,38 +1,38 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const nodemailer = require('nodemailer');
+const functions = require('firebase-functions')
+const admin = require('firebase-admin')
+const nodemailer = require('nodemailer')
 
 const mailgun = require('mailgun-js')({
   apiKey: functions.config().mailgunapi.id,
-  domain: functions.config().mailgundomian.id,
-});
+  domain: functions.config().mailgundomian.id
+})
 
-function sendNewChallengeEmail(client, from, deliverable, deadline) {
+function sendNewChallengeEmail (client, from, deliverable, deadline) {
   const mailOptions = {
     from: 'Realsies <hi@realsies.com>',
-    to: client,
-  };
+    to: client
+  }
 
-  mailOptions.subject = 'You have Been Challenged';
-  mailOptions.text = `${from} has challenged you to ${deliverable} by ${deadline}. To accept this challenge login at https://www.app.realsies.com/login with your email and the password 'changeme'.`;
+  mailOptions.subject = 'You have been sent a ne Realsie'
+  mailOptions.text = `${from} has challenged you to ${deliverable} by ${
+    deadline
+  }. To accept this challenge login at https://www.app.realsies.com/login with your email and the password 'changeme'.`
 
   return mailgun
     .messages()
     .send(mailOptions)
     .then(() => {
-      console.log('New welcome email sent to:', client);
-    });
+      console.log('New welcome email sent to:', client)
+    })
 }
 
 exports.newChallengeEmail = functions.database
   .ref('users/{uid}/sent/{newChallenge}')
-  .onCreate((event) => {
-    const {
-      client, from, deliverable, deadline,
-    } = event.data.val();
+  .onCreate(event => {
+    const { client, from, deliverable, deadline } = event.data.val()
 
-    return sendNewChallengeEmail(client, from, deliverable, deadline);
-  });
+    return sendNewChallengeEmail(client, from, deliverable, deadline)
+  })
 
 // exports.weeklyEmail = functions.https.onRequest((req, res) => {
 //   const currentTime = new Date().getTime();
