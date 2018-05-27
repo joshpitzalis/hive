@@ -54,12 +54,14 @@ export default class Dashboard extends Component {
   }
 }
 
+export const callTask = ({ user, type }) => ref.child(`/users/${user}/${type}`).once('value');
+
 // shows tasks you sent
 export const TasksYouSent = lifecycle({
   componentDidMount() {
-    ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/sent`)
-      .on('value', snap => this.setState({ tasks: snap.val() }));
+    callTask(firebaseAuth().currentUser.uid, 'sent').then(snap =>
+      this.setState({ tasks: snap.val() }),
+    );
   },
 })(({ tasks }) => (
   <div>
@@ -92,9 +94,9 @@ export const TasksYouSent = lifecycle({
 // shows active tasks
 export const ActiveTasks = lifecycle({
   componentDidMount() {
-    ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/active`)
-      .on('value', snap => this.setState({ tasks: snap.val() }));
+    callTask(firebaseAuth().currentUser.uid, 'active').then(snap =>
+      this.setState({ tasks: snap.val() }),
+    );
   },
 })(({ tasks, toggleUploadModal }) => (
   <section>
@@ -127,9 +129,9 @@ export const ActiveTasks = lifecycle({
 // shows pending tasks
 export const PendingTasks = lifecycle({
   componentDidMount() {
-    ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/pending`)
-      .on('value', snap => this.setState({ tasks: snap.val() }));
+    callTask(firebaseAuth().currentUser.uid, 'pending').then(snap =>
+      this.setState({ tasks: snap.val() }),
+    );
   },
 })(({ tasks, handleShowCardEntryForm }) => (
   <section>

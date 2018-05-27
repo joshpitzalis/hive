@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Route, BrowserRouter, Redirect, Switch } from 'react-router-dom';
 import Nav from './components/Nav';
 import Login from './pages/Login';
-import Register from './pages/Register';
+// import Register from './pages/Register';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Dashboard from './pages/Dashboard';
@@ -52,9 +52,9 @@ export default class App extends Component {
           <Switch>
             <Route path="/" exact component={Home} />
             <PublicRoute authed={this.state.authed} path="/login" component={Login} />
-            {process.env.NODE_ENV === 'production' ? null : (
+            {/* {process.env.NODE_ENV === 'production' ? null : (
               <PublicRoute authed={this.state.authed} path="/register" component={Register} />
-            )}
+            )} */}
             <PrivateRoute authed={this.state.authed} path="/dashboard" component={Dashboard} />
             <PrivateRoute
               authed={this.state.authed}
