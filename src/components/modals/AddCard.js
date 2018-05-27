@@ -1,26 +1,16 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import Close from '../../styles/images/close.js'
-import { Checkbox, Label } from 'rebass'
-import { firebaseAuth, ref } from '../../constants/firebase.js'
-import { acceptChallenge } from '../../helpers/crud'
-import {
-  TextField,
-  ButtonGroup,
-  Button,
-  FormLayout,
-  DisplayText,
-  Tooltip
-} from '@shopify/polaris'
-import StripeCheckout from 'react-stripe-checkout'
-import { logo } from '../../styles/images/realsies.png'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { ref } from '../../constants/firebase.js';
+import { acceptChallenge } from '../../helpers/crud';
+import { Button, DisplayText, Tooltip } from '@shopify/polaris';
+import StripeCheckout from 'react-stripe-checkout';
 
 export default class Add extends Component {
   propTypes = {
     closeAddCardModal: PropTypes.func.isRequired,
     taskId: PropTypes.string.isRequired,
-    toggleCheckout: PropTypes.func.isRequired
-  }
+    toggleCheckout: PropTypes.func.isRequired,
+  };
 
   state = {
     deliverable: '',
@@ -32,14 +22,14 @@ export default class Add extends Component {
     month: '',
     year: '',
     taskDetails: null,
-    loading: false
-  }
+    loading: false,
+  };
 
   componentDidMount() {
     ref
       .child(`/pendingTasks/${this.props.taskId}`)
       .once('value')
-      .then(snap => this.setState({ taskDetails: snap.val() }))
+      .then(snap => this.setState({ taskDetails: snap.val() }));
   }
 
   render() {
@@ -49,13 +39,11 @@ export default class Add extends Component {
           <div className="bg-white pa4 w5 w-40-ns br3">
             {!this.state.loading && (
               <DisplayText size="extraLarge">
-                {`You are committing to ${this.state.taskDetails
-                  ? this.state.taskDetails.deliverable
-                  : `...`} for ${this.state.taskDetails
-                  ? this.state.taskDetails.client
-                  : `...`} by ${this.state.taskDetails
-                  ? this.state.taskDetails.deadline
-                  : `...`} or be charged $10 everyday till you do.`}
+                {`You are committing to ${
+                  this.state.taskDetails ? this.state.taskDetails.deliverable : `...`
+                } for ${this.state.taskDetails ? this.state.taskDetails.client : `...`} by ${
+                  this.state.taskDetails ? this.state.taskDetails.deadline : `...`
+                } or be charged $10 everyday till you do.`}
               </DisplayText>
             )}
             <br />
@@ -78,22 +66,20 @@ export default class Add extends Component {
                       this.state.taskDetails.deadline,
                       this.state.taskDetails.createdAt,
                       this.state.taskDetails.sendersUid,
-                      token
-                    )
-                    this.props.closeAddCardModal()
+                      token,
+                    );
+                    this.props.closeAddCardModal();
                   }}
                   currency={'USD'}
                   stripeKey={process.env.REACT_APP_stripeKey}
                   panelLabel="Commit"
-                  label={
-                    this.state.loading ? 'Loading...' : 'Enter Card Details'
-                  }
+                  label={this.state.loading ? 'Loading...' : 'Enter Card Details'}
                 />
               </Tooltip>
             </span>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }

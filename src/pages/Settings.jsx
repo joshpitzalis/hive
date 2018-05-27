@@ -1,7 +1,7 @@
-import React from 'react'
-import { Card, Layout, Banner } from '@shopify/polaris'
-import { firebaseAuth } from '../constants/firebase.js'
-import { compose, withState } from 'recompose'
+import React from 'react';
+import { Card, Layout, Banner } from '@shopify/polaris';
+import { firebaseAuth } from '../constants/firebase.js';
+import { compose, withState } from 'recompose';
 
 // responsible for displaying settings
 const Settings = () => (
@@ -12,17 +12,18 @@ const Settings = () => (
       <DeleteAccount />
     </Layout.Section>
   </Layout>
-)
+);
 
-const enhance = compose(withState('value', 'updateValue', false))
+const enhance = compose(withState('value', 'updateValue', false));
 
 const ResetPassword = enhance(({ value, updateValue }) => (
   <section>
     {firebaseAuth().currentUser &&
       value && (
         <Banner
-          title={`Your password reset email has been sent to ${firebaseAuth()
-            .currentUser.email}`}
+          title={`Your password reset email has been sent to ${
+            firebaseAuth().currentUser.email
+          }`}
           status="success"
         />
       )}
@@ -36,8 +37,8 @@ const ResetPassword = enhance(({ value, updateValue }) => (
             firebaseAuth()
               .sendPasswordResetEmail(firebaseAuth().currentUser.email)
               .then(() => {
-                console.log('Email sent.')
-                updateValue(true)
+                console.log('Email sent.');
+                updateValue(true);
               })
               .catch(error => console.error(error))
         }}
@@ -48,9 +49,9 @@ const ResetPassword = enhance(({ value, updateValue }) => (
       </Card>
     )}
   </section>
-))
+));
 
-const enhanced = compose(withState('value', 'updateValue', false))
+const enhanced = compose(withState('value', 'updateValue', false));
 
 const DeleteAccount = enhanced(({ value, updateValue }) => (
   <section>
@@ -73,12 +74,12 @@ const DeleteAccount = enhanced(({ value, updateValue }) => (
             firebaseAuth()
               .currentUser.delete()
               .then(() => {
-                console.log('Account deleted Successfully.')
+                console.log('Account deleted Successfully.');
               })
               .catch(error => {
-                console.error(error)
-                updateValue(true)
-              })
+                console.error(error);
+                updateValue(true);
+              });
           }
         }}
       >
@@ -91,9 +92,9 @@ const DeleteAccount = enhanced(({ value, updateValue }) => (
       </Card>
     )}
   </section>
-))
+));
 
-export default Settings
+export default Settings;
 
 // // responsible for handling password form data
 // const enhance = compose(

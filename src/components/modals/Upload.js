@@ -1,79 +1,71 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { uploadDeliverable } from '../../helpers/crud.js'
-import Close from '../../styles/images/close.js'
-import Dropzone from 'react-dropzone'
-import Upload from '../../styles/images/Upload.js'
-import Complete from '../../styles/images/Complete.js'
-import { auth, storage } from '../../constants/firebase.js'
+import React, { Component } from 'react';
+import { uploadDeliverable } from '../../helpers/crud.js';
+import Close from '../../styles/images/close.js';
+import Dropzone from 'react-dropzone';
+import Upload from '../../styles/images/Upload.js';
+import Complete from '../../styles/images/Complete.js';
+import { auth, storage } from '../../constants/firebase.js';
 
 export default class UploadDeliverable extends Component {
   state = {
     upload: null,
     errors: {},
-    isSubmitting: false
-  }
+    isSubmitting: false,
+  };
 
   handleUrl = e => {
     this.setState({
       url: e.target.value,
-      errors: { ...this.state.errors, url: null }
-    })
-  }
+      errors: { ...this.state.errors, url: null },
+    });
+  };
 
   handleUpload = files => {
-    const file = files[0]
+    const file = files[0];
     const uploadTask = storage
       .ref('/deliverables')
       .child(auth.currentUser.uid)
       .child(file.name)
-      .put(file, { contentType: file.type })
+      .put(file, { contentType: file.type });
     uploadTask.on('state_changed', snapshot => {
       this.setState({
         transferCurrent: snapshot.bytesTransferred,
-        transferTotal: snapshot.totalBytes
-      })
-    })
+        transferTotal: snapshot.totalBytes,
+      });
+    });
     uploadTask
       .then(snapshot => {
         this.setState({
           upload: snapshot.downloadURL,
-          errors: { ...this.state.errors, upload: null }
-        })
+          errors: { ...this.state.errors, upload: null },
+        });
       })
-      .catch(error => console.error(error))
-  }
+      .catch(error => console.error(error));
+  };
 
   handleSubmit = async () => {
-    this.setState({ isSubmitting: true })
+    this.setState({ isSubmitting: true });
     const errors = validate({
       upload: this.state.upload,
-      url: this.state.url
-    })
-    const anyError = Object.keys(errors).some(x => errors[x])
+      url: this.state.url,
+    });
+    const anyError = Object.keys(errors).some(x => errors[x]);
     if (anyError) {
-      this.setState({ errors, isSubmitting: false })
-      return
+      this.setState({ errors, isSubmitting: false });
+      return;
     }
 
-    await uploadDeliverable(
-      this.state.upload,
-      this.state.url,
-      this.props.taskId
-    )
-    this.props.closeUploadModal()
-  }
+    await uploadDeliverable(this.state.upload, this.state.url, this.props.taskId);
+    this.props.closeUploadModal();
+  };
 
   render() {
-    const errors = this.state.errors
+    const errors = this.state.errors;
     return (
       <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
         <div className="flex mxc cxc w-100 h-100">
           <div className="bg-white pa3 w5 w-40-ns tc">
-            <div
-              className="tr dim pointer"
-              onClick={() => this.props.closeUploadModal()}
-            >
+            <div className="tr dim pointer" onClick={() => this.props.closeUploadModal()}>
               <Close />
             </div>
 
@@ -90,9 +82,7 @@ export default class UploadDeliverable extends Component {
               onDrop={this.handleUpload}
               activeStyle={{ transform: 'scale(1.05)' }}
             >
-              <div className="flex mxc w-100">
-                {this.state.upload ? <Complete /> : <Upload />}
-              </div>
+              <div className="flex mxc w-100">{this.state.upload ? <Complete /> : <Upload />}</div>
               {this.state.upload ? (
                 <p>Drag another file here to replace.</p>
               ) : (
@@ -117,16 +107,15 @@ export default class UploadDeliverable extends Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 function validate(inputs) {
   return {
     base:
-      (inputs.url && inputs.url.length > 0) ||
-      (inputs.upload && inputs.upload.length > 0)
+      (inputs.url && inputs.url.length > 0) || (inputs.upload && inputs.upload.length > 0)
         ? null
-        : 'Please add atleast one field.'
-  }
+        : 'Please add atleast one field.',
+  };
 }

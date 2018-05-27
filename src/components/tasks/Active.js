@@ -1,21 +1,20 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { acceptChallenge, declineChallenge } from '../../helpers/crud'
-import { firebaseAuth, ref } from '../../constants/firebase.js'
-import { Card, Button } from '@shopify/polaris'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { firebaseAuth, ref } from '../../constants/firebase.js';
+import { Card } from '@shopify/polaris';
 
 class Active extends Component {
   handleArchive = taskId => {
     ref
       .child(`users/${firebaseAuth().currentUser.uid}/active/${taskId}`)
       .update({ archived: true })
-      .catch(error => console.error(error))
-  }
+      .catch(error => console.error(error));
+  };
   render() {
-    const today = new Date().toISOString()
+    const today = new Date().toISOString();
 
     if (this.props.archived) {
-      return null
+      return null;
     }
     return (
       <Card
@@ -28,8 +27,7 @@ class Active extends Component {
       >
         <div className="flex mxc">
           <h2>
-            {this.props.from || 'Someone'} asked you to do this by{' '}
-            {this.props.due || 'sometime'}.
+            {this.props.from || 'Someone'} asked you to do this by {this.props.due || 'sometime'}.
           </h2>
         </div>
         {this.props.ready ? (
@@ -60,19 +58,19 @@ class Active extends Component {
           </div>
         )}
       </Card>
-    )
+    );
   }
 }
 
 Active.propTypes = {
   title: PropTypes.string.isRequired,
   from: PropTypes.string.isRequired,
-  due: PropTypes.string.isRequired
-}
+  due: PropTypes.string.isRequired,
+};
 Active.defaultProps = {
   title: 'Thing',
   from: 'Someone',
-  due: 'Sometime'
-}
+  due: 'Sometime',
+};
 
-export default Active
+export default Active;

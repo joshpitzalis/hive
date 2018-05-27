@@ -1,10 +1,7 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { createNewTask } from '../../helpers/crud.js'
-import Close from '../../styles/images/close.js'
-import { Checkbox, Label } from 'rebass'
-import { firebaseAuth, ref } from '../../constants/firebase.js'
-import { TextField, ButtonGroup, Button, FormLayout } from '@shopify/polaris'
+import React, { Component } from 'react';
+import { createNewTask } from '../../helpers/crud.js';
+// import { firebaseAuth, ref } from '../../constants/firebase.js';
+import { TextField, ButtonGroup, Button, FormLayout } from '@shopify/polaris';
 
 export default class Add extends Component {
   state = {
@@ -12,53 +9,49 @@ export default class Add extends Component {
     client: '',
     deadline: new Date().toISOString().split('T')[0],
     errors: {},
-    isSubmitting: false
-  }
+    isSubmitting: false,
+  };
 
-  componentDidMount() {
-    const source = ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
-      .once('value')
-      .then(snap => this.setState({ hasCard: true }))
-  }
+  // componentDidMount() {
+  //   const source = ref
+  //     .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+  //     .once('value')
+  //     .then(snap => this.setState({ hasCard: true }));
+  // }
 
   handleEmailChange = e =>
-    this.setState({ client: e, errors: { ...this.state.errors, email: null } })
+    this.setState({ client: e, errors: { ...this.state.errors, email: null } });
   handleDeliverableChange = e =>
     this.setState({
       deliverable: e,
-      errors: { ...this.state.errors, deliverable: null }
-    })
+      errors: { ...this.state.errors, deliverable: null },
+    });
   handleDeadlineChange = e =>
     this.setState({
       deadline: e,
-      errors: { ...this.state.errors, deadline: null }
-    })
+      errors: { ...this.state.errors, deadline: null },
+    });
 
   handleSubmit = () => {
-    console.log('state', this.state)
+    console.log('state', this.state);
 
-    this.setState({ isSubmitting: true })
+    this.setState({ isSubmitting: true });
     const errors = validate({
       email: this.state.client,
       deliverable: this.state.deliverable,
-      date: this.state.deadline
-    })
-    const anyError = Object.keys(errors).some(x => errors[x])
+      date: this.state.deadline,
+    });
+    const anyError = Object.keys(errors).some(x => errors[x]);
     if (anyError) {
-      this.setState({ errors, isSubmitting: false })
-      return
+      this.setState({ errors, isSubmitting: false });
+      return;
     }
-    createNewTask(
-      this.state.deliverable,
-      this.state.client,
-      this.state.deadline
-    )
-    this.props.closeAddModal()
-  }
+    createNewTask(this.state.deliverable, this.state.client, this.state.deadline);
+    this.props.closeAddModal();
+  };
 
   render() {
-    const errors = this.state.errors
+    const errors = this.state.errors;
     return (
       <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
         <div className="flex mxc cxc w-100 h-100">
@@ -88,9 +81,7 @@ export default class Add extends Component {
                 type="date"
                 onChange={this.handleDeadlineChange}
                 value={this.state.deadline}
-                error={
-                  this.state.deadline && errors.date ? `${errors.date}` : null
-                }
+                error={this.state.deadline && errors.date ? `${errors.date}` : null}
               />
 
               {errors.base ? <p className="red">{errors.base}</p> : null}
@@ -103,8 +94,7 @@ export default class Add extends Component {
                   </Button>
                 ) : (
                   <Button primary submit onClick={this.handleSubmit}>
-                    Send Realsie to{' '}
-                    {this.state.client ? this.state.client : `...`}
+                    Send Realsie to {this.state.client ? this.state.client : `...`}
                   </Button>
                 )}
               </ButtonGroup>
@@ -112,7 +102,7 @@ export default class Add extends Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -127,8 +117,7 @@ function validate(inputs) {
 
     date:
       inputs.date &&
-      new Date(inputs.date).toISOString().split('T')[0] >=
-        new Date().toISOString().split('T')[0]
+      new Date(inputs.date).toISOString().split('T')[0] >= new Date().toISOString().split('T')[0]
         ? null
         : `The deadline cannot be in the past. That's not fair.`,
     base:
@@ -139,6 +128,6 @@ function validate(inputs) {
       inputs.deliverable &&
       inputs.deliverable.length > 0
         ? null
-        : 'Please fill out all the fields.'
-  }
+        : 'Please fill out all the fields.',
+  };
 }

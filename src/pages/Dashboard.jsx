@@ -1,34 +1,33 @@
-import React, { Component } from 'react'
-import Task from './tasks/Sent'
-import Pending from './tasks/Pending'
-import Active from './tasks/Active'
-import Deliverable from './tasks/Deliverable'
-import Add from './modals/Add'
-import AddCard from './modals/AddCard'
-import Upload from './modals/Upload'
-import { firebaseAuth, ref } from '../constants/firebase.js'
-import { Button, DisplayText } from '@shopify/polaris'
-import { withState, lifecycle, compose } from 'recompose'
+import React, { Component } from 'react';
+import Task from '../components/tasks/Sent';
+import Pending from '../components/tasks/Pending';
+import Active from '../components/tasks/Active';
+import Add from '../components/modals/Add';
+import AddCard from '../components/modals/AddCard';
+import Upload from '../components/modals/Upload';
+import { firebaseAuth, ref } from '../constants/firebase.js';
+import { Button, DisplayText } from '@shopify/polaris';
+import { withState, lifecycle } from 'recompose';
 
 export default class Dashboard extends Component {
   state = {
     deliver: false,
     showCardEntryForm: false,
     taskId: null,
-    deliverableTaskId: null
-  }
+    deliverableTaskId: null,
+  };
 
   toggleAddCardModal = () => {
-    this.setState({ showCardEntryForm: !this.state.showCardEntryForm })
-  }
+    this.setState({ showCardEntryForm: !this.state.showCardEntryForm });
+  };
 
   toggleUploadModal = taskId => {
-    this.setState({ deliver: !this.state.deliver, deliverableTaskId: taskId })
-  }
+    this.setState({ deliver: !this.state.deliver, deliverableTaskId: taskId });
+  };
 
   handleShowCardEntryForm = taskId => {
-    this.setState({ showCardEntryForm: true, taskId })
-  }
+    this.setState({ showCardEntryForm: true, taskId });
+  };
 
   render() {
     return (
@@ -46,15 +45,12 @@ export default class Dashboard extends Component {
         )}
         <PendingTasks handleShowCardEntryForm={this.handleShowCardEntryForm} />
         {this.state.deliver && (
-          <Upload
-            closeUploadModal={this.toggleUploadModal}
-            taskId={this.state.deliverableTaskId}
-          />
+          <Upload closeUploadModal={this.toggleUploadModal} taskId={this.state.deliverableTaskId} />
         )}
         <ActiveTasks toggleUploadModal={this.toggleUploadModal} />
         <TasksYouSent />
       </div>
-    )
+    );
   }
 }
 
@@ -63,8 +59,8 @@ export const TasksYouSent = lifecycle({
   componentDidMount() {
     ref
       .child(`/users/${firebaseAuth().currentUser.uid}/sent`)
-      .on('value', snap => this.setState({ tasks: snap.val() }))
-  }
+      .on('value', snap => this.setState({ tasks: snap.val() }));
+  },
 })(({ tasks }) => (
   <div>
     {tasks && (
@@ -91,15 +87,15 @@ export const TasksYouSent = lifecycle({
       </div>
     )}
   </div>
-))
+));
 
 // shows active tasks
 export const ActiveTasks = lifecycle({
   componentDidMount() {
     ref
       .child(`/users/${firebaseAuth().currentUser.uid}/active`)
-      .on('value', snap => this.setState({ tasks: snap.val() }))
-  }
+      .on('value', snap => this.setState({ tasks: snap.val() }));
+  },
 })(({ tasks, toggleUploadModal }) => (
   <section>
     {tasks && (
@@ -126,24 +122,22 @@ export const ActiveTasks = lifecycle({
       </div>
     )}
   </section>
-))
+));
 
 // shows pending tasks
 export const PendingTasks = lifecycle({
   componentDidMount() {
     ref
       .child(`/users/${firebaseAuth().currentUser.uid}/pending`)
-      .on('value', snap => this.setState({ tasks: snap.val() }))
-  }
+      .on('value', snap => this.setState({ tasks: snap.val() }));
+  },
 })(({ tasks, handleShowCardEntryForm }) => (
   <section>
     {tasks && (
       <div>
         <br />
         <br />
-        {tasks && (
-          <DisplayText size="extraLarge">You Have Been Asked To...</DisplayText>
-        )}
+        {tasks && <DisplayText size="extraLarge">You Have Been Asked To...</DisplayText>}
         <div className="pv4">
           {tasks &&
             Object.values(tasks).map(task => (
@@ -161,25 +155,17 @@ export const PendingTasks = lifecycle({
       </div>
     )}
   </section>
-))
+));
 
 // this component shows a create realsie modal
-export const SendARealsie = withState(
-  'AddModalIsOpen',
-  'toggleAddModal',
-  false
-)(({ AddModalIsOpen, toggleAddModal }) => (
-  <div>
-    {AddModalIsOpen && (
-      <Add closeAddModal={() => toggleAddModal(!AddModalIsOpen)} />
-    )}
+export const SendARealsie = withState('AddModalIsOpen', 'toggleAddModal', false)(
+  ({ AddModalIsOpen, toggleAddModal }) => (
+    <div>
+      {AddModalIsOpen && <Add closeAddModal={() => toggleAddModal(!AddModalIsOpen)} />}
 
-    <Button
-      primary
-      size="large"
-      onClick={() => toggleAddModal(!AddModalIsOpen)}
-    >
-      Send Someone A Realsie
-    </Button>
-  </div>
-))
+      <Button primary size="large" onClick={() => toggleAddModal(!AddModalIsOpen)}>
+        Send Someone A Realsie
+      </Button>
+    </div>
+  ),
+);

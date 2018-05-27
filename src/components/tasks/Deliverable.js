@@ -1,7 +1,6 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import Upload from '../modals/Upload'
-import { Card, Button } from '@shopify/polaris'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Card, Button } from '@shopify/polaris';
 
 const Deliverable = ({
   ready,
@@ -14,59 +13,57 @@ const Deliverable = ({
   file,
   url,
   handleArchive,
-  pending
-}) => {
-  return (
-    <Card
-      title={title}
-      sectioned
-      primaryFooterAction={{ content: 'Accept' }}
-      secondaryFooterAction={{ content: 'Decline' }}
-    >
-      <div className="flex">
-        {ready ? (
-          <span
-            className={`br-100 bg-yellow h2 w2 db pointer bg-gold`}
-            title="Click to Archive"
-            onClick={() => handleArchive(taskId)}
-          />
+  pending,
+}) => (
+  <Card
+    title={title}
+    sectioned
+    primaryFooterAction={{ content: 'Accept' }}
+    secondaryFooterAction={{ content: 'Decline' }}
+  >
+    <div className="flex">
+      {ready ? (
+        <span
+          className={'br-100 bg-yellow h2 w2 db pointer bg-gold'}
+          title="Click to Archive"
+          onClick={() => handleArchive(taskId)}
+        />
         ) : (
           <span className="br-100 bg-black h2 w2 db" />
         )}
 
-        <h2 className="pl4">
-          {client || 'Someone'} asked you to do this by {due || 'sometime'}.
-        </h2>
-      </div>
-      {ready && (
-        <Button>
-          {file ? (
-            <a href={file} download className="link">
+      <h2 className="pl4">
+        {client || 'Someone'} asked you to do this by {due || 'sometime'}.
+      </h2>
+    </div>
+    {ready && (
+    <Button>
+      {file ? (
+        <a href={file} download className="link">
               Download
-            </a>
+        </a>
           ) : (
             <a href={url} target="_blank" className="link">
               Open
             </a>
           )}
-        </Button>
+    </Button>
       )}
-    </Card>
-  )
-}
+  </Card>
+  );
 
 Deliverable.propTypes = {
   title: PropTypes.string.isRequired,
   from: PropTypes.string.isRequired,
-  due: PropTypes.string.isRequired
-}
+  due: PropTypes.string.isRequired,
+};
 Deliverable.defaultProps = {
   title: 'Thing',
   from: 'Someone',
-  due: 'Sometime'
-}
+  due: 'Sometime',
+};
 
-export default Deliverable
+export default Deliverable;
 
 //
 //

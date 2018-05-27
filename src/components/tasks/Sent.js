@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, Button } from '@shopify/polaris';
+import { Card } from '@shopify/polaris';
 
 const Task = ({
   declined,
