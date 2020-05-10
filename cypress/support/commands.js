@@ -38,3 +38,9 @@
 //       log.snapshot().end()
 //     })
 // })
+
+Cypress.Commands.add("logout", () =>{
+  cy.get('.flex > :nth-child(2) > div > .Polaris-Button').click()
+    cy.get(':nth-child(3) > .Polaris-ActionList__Item').click({force: true})
+    cy.url().should('include', '/login')
+})

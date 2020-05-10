@@ -63,7 +63,7 @@ export function createNewTask (deliverable, client, deadline) {
     accepted: false
   }
 
-  // store task with user
+  // store task with sender
   ref
     .child(`users/${firebaseAuth().currentUser.uid}/sent/${newTaskKey}`)
     .update(newTask)
@@ -74,6 +74,8 @@ export function createNewTask (deliverable, client, deadline) {
     .child(`pendingTasks/${newTaskKey}`)
     .update(newTask)
     .catch(error => console.error(error))
+
+  // the task gets added to the reciever in a cloud function auth/createClient
 }
 
 export const uploadDeliverable = async (

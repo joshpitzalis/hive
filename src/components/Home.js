@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { EmptyState } from '@shopify/polaris';
 import { withState } from 'recompose';

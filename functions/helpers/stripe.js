@@ -1,3 +1,4 @@
+/* eslint-disable */
 const secureCompare = require('secure-compare')
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')

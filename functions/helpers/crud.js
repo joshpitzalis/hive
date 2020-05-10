@@ -1,5 +1,6 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+/* eslint-disable */
+const functions = require('firebase-functions')
+const admin = require('firebase-admin')
 
 exports.updateTask = functions.database
   .ref('/users/{anyUser}/tasks/{task}')
@@ -16,13 +17,13 @@ exports.updateTask = functions.database
               ready: true,
               file: event.data.val().file || null,
               url: event.data.val().url || null,
-              timeDelivered: event.data.val().timeDelivered,
+              timeDelivered: event.data.val().timeDelivered
             })
             .catch((error) => {
-              console.log('Error updating deliverable for client:', error);
-            }));
+              console.log('Error updating deliverable for client:', error)
+            }))
     }
-  });
+  })
 
 exports.challengeDeclined = functions.database
   .ref('/users/{anyUser}/pending/{anyTask}')
@@ -35,7 +36,7 @@ exports.challengeDeclined = functions.database
           .database()
           .ref(`/users/${result.uid}/sent/${event.data.previous.val().taskId}`)
           .update({
-            declined: true,
+            declined: true
           }))
-      .catch(error => console.log('Error showing declined to sender', error));
-  });
+      .catch(error => console.log('Error showing declined to sender', error))
+  })

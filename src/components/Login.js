@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { Component } from 'react'
 import { login, resetPassword } from '../helpers/auth'
 
@@ -9,6 +11,7 @@ function setErrorMsg(error) {
 
 export default class Login extends Component {
   state = { loginMessage: null }
+  
   handleSubmit = e => {
     e.preventDefault()
     login(this.email.value, this.pw.value).catch(error => {

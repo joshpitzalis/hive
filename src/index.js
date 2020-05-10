@@ -25,7 +25,8 @@ class App extends Component {
   }
 
   componentDidMount () {
-    this.removeListener = firebaseAuth().onAuthStateChanged(user => {
+    // this.removeListener =
+     firebaseAuth().onAuthStateChanged(user => {
       if (user) {
         this.setState({
           authed: true,
@@ -39,9 +40,9 @@ class App extends Component {
       }
     })
   }
-  componentWillUnmount () {
-    this.removeListener()
-  }
+  // componentWillUnmount () {
+  //   this.removeListener()
+  // }
   render () {
     return this.state.loading === true ? (
       <h1 className="tc pv5 f1">Loading...</h1>

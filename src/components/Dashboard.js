@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react'
 import Task from './tasks/Sent'
 import Pending from './tasks/Pending'

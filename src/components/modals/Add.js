@@ -1,122 +1,127 @@
-import React, { Component } from 'react'
+
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { createNewTask } from '../../helpers/crud.js'
-import Close from '../../styles/images/close.js'
-import { Checkbox, Label } from 'rebass'
-import { firebaseAuth, ref } from '../../constants/firebase.js'
+// import { firebaseAuth, ref } from '../../constants/firebase.js'
 import { TextField, ButtonGroup, Button, FormLayout } from '@shopify/polaris'
 
-export default class Add extends Component {
-  state = {
+const CreateNewTask = ({
+  closeAddModal
+}) => {
+  const [state, setState] = useState({
     deliverable: '',
     client: '',
     deadline: new Date().toISOString().split('T')[0],
     errors: {},
-    isSubmitting: false
-  }
+    isSubmitting: false,
+    hasCard: false
+  })
 
-  componentDidMount() {
-    const source = ref
-      .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
-      .once('value')
-      .then(snap => this.setState({ hasCard: true }))
-  }
+  // useEffect(() => ref
+  //   .child(`/users/${firebaseAuth().currentUser.uid}/sources/token/card`)
+  //   .once('value')
+  //   .then(snap => setState({ ...state, hasCard: true })), [])
 
-  handleEmailChange = e =>
-    this.setState({ client: e, errors: { ...this.state.errors, email: null } })
-  handleDeliverableChange = e =>
-    this.setState({
+  const handleEmailChange = e =>
+    setState({ ...state, client: e, errors: { ...state.errors, email: null } })
+
+  const handleDeliverableChange = e =>
+    setState({...state,
       deliverable: e,
-      errors: { ...this.state.errors, deliverable: null }
+      errors: { ...state.errors, deliverable: null }
     })
-  handleDeadlineChange = e =>
-    this.setState({
+
+  const handleDeadlineChange = e =>
+    setState({...state,
       deadline: e,
-      errors: { ...this.state.errors, deadline: null }
+      errors: { ...state.errors, deadline: null }
     })
 
-  handleSubmit = () => {
-    console.log('state', this.state)
-
-    this.setState({ isSubmitting: true })
+  const handleSubmit = () => {
+    setState({ ...state, isSubmitting: true })
     const errors = validate({
-      email: this.state.client,
-      deliverable: this.state.deliverable,
-      date: this.state.deadline
+      email: state.client,
+      deliverable: state.deliverable,
+      date: state.deadline
     })
     const anyError = Object.keys(errors).some(x => errors[x])
     if (anyError) {
-      this.setState({ errors, isSubmitting: false })
+      setState({ ...state, errors, isSubmitting: false })
       return
     }
     createNewTask(
-      this.state.deliverable,
-      this.state.client,
-      this.state.deadline
+      state.deliverable,
+      state.client,
+      state.deadline
     )
-    this.props.closeAddModal()
+    closeAddModal()
   }
 
-  render() {
-    const errors = this.state.errors
-    return (
-      <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
-        <div className="flex mxc cxc w-100 h-100">
-          <div className="bg-white pa3 w5 w-40-ns br3 tl">
-            <FormLayout>
-              <TextField
-                label="Ask"
-                type="email"
-                onChange={this.handleEmailChange}
-                placeholder="Someone's Email Address"
-                value={this.state.client}
-                error={errors.email ? `${errors.email}` : null}
-              />
+  const {errors} = state
 
-              <TextField
-                label="To"
-                type="text"
-                onChange={this.handleDeliverableChange}
-                placeholder="What You want"
-                value={this.state.deliverable}
-                spellCheck={true}
-                helpText={null}
-              />
+  return (
+    <div className="flex fixed top-0 left-0 h-100 w-100 bg-black-60 z-1">
+      <div className="flex mxc cxc w-100 h-100">
+        <div className="bg-white pa3 w5 w-40-ns br3 tl">
+          <FormLayout>
+            <TextField
+              label="Ask"
+              type="email"
+              onChange={handleEmailChange}
+              placeholder="Someone's Email Address"
+              value={state.client}
+              error={errors.email ? `${errors.email}` : null}
+            />
 
-              <TextField
-                label="By"
-                type="date"
-                onChange={this.handleDeadlineChange}
-                value={this.state.deadline}
-                error={
-                  this.state.deadline && errors.date ? `${errors.date}` : null
-                }
-              />
+            <TextField
+              label="To"
+              type="text"
+              onChange={handleDeliverableChange}
+              placeholder="What You want"
+              value={state.deliverable}
+              spellCheck={true}
+              helpText={null}
+            />
 
-              {errors.base ? <p className="red">{errors.base}</p> : null}
+            <TextField
+              label="By"
+              type="date"
+              onChange={handleDeadlineChange}
+              value={state.deadline}
+              error={
+                state.deadline && errors.date ? `${errors.date}` : null
+              }
+            />
 
-              <ButtonGroup>
-                <Button onClick={this.props.closeAddModal}>Cancel</Button>
-                {this.state.isSubmitting ? (
-                  <Button disabled primary>
+            {errors.base ? <p className="red">{errors.base}</p> : null}
+
+            <ButtonGroup>
+              <Button onClick={closeAddModal}>Cancel</Button>
+              {state.isSubmitting ? (
+                <Button disabled primary>
                     Submitting...
-                  </Button>
-                ) : (
-                  <Button primary submit onClick={this.handleSubmit}>
+                </Button>
+              ) : (
+                <Button primary submit onClick={handleSubmit}>
                     Send Realsie to{' '}
-                    {this.state.client ? this.state.client : `...`}
-                  </Button>
-                )}
-              </ButtonGroup>
-            </FormLayout>
-          </div>
+                  {state.client ? state.client : `...`}
+                </Button>
+              )}
+            </ButtonGroup>
+          </FormLayout>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
-function validate(inputs) {
+CreateNewTask.propTypes = {
+  closeAddModal: PropTypes.func.isRequired
+}
+
+export default CreateNewTask
+
+function validate (inputs) {
   return {
     email:
       inputs.email && inputs.email.indexOf('@') === -1

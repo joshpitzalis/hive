@@ -3,41 +3,39 @@ const password1 = 'abc123'
 const user2 = 'test2@realsies.com'
 const password2 = 'changeme'
 
-describe('The Home Page', () => {
-  it.skip('successfully loads', () => {
+describe('critical path ', () => {
+  it('successfully loads Home Page', () => {
     cy.visit('/')
   })
-})
 
-describe('The Registration Page', () => {
-  it.skip('creates a test user', () => {
+  it.skip('creates a test user on registration page', () => {
     cy.visit('/register')
     cy.get('input[placeholder=Email]').type(user1)
     cy.get('input[placeholder=Password]').type(password1)
     cy.get('[data-test="registerButton"]').click()
+    cy.wait(2000)
     cy.url().should('include', '/dashboard')
   })
-})
 
-describe('The Login Process', () => {
-  it.skip('logs in successfully', () => {
+  it('logs out', () => {
+    cy.visit('/')
+    cy.get('.Polaris-ButtonGroup > :nth-child(1) > .Polaris-Button').click()
+    cy.wait(2000)
+    cy.url().should('include', '/dashboard')
+    cy.logout()
+  })
+
+
+  it('logs in successfully', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user1)
     cy.get('input[name=password]').type(password1)
     cy.get('[data-test="loginButton"]').click()
     cy.url().should('include', '/dashboard')
   })
-})
 
-describe('Creating a New Task', () => {
-  beforeEach(() => {
-    cy.visit('/login')
-    cy.get('input[name=email-address]').type(user1)
-    cy.get('input[name=password]').type(password1)
-    cy.get('[data-test="loginButton"]').click()
-  })
 
-  it.skip('Creates a new task', () => {
+  it ('Creates a new task', () => {
     cy.contains('Send Someone A Realsie').click()
     cy.get('input[type=email]').type(user2)
     cy.get('input[type=date]').type(`${new Date().toISOString().split('T')[0]}`)
@@ -50,13 +48,23 @@ describe('Creating a New Task', () => {
     cy.contains(`Send Realsie to ${user2}`).click({})
     cy.url().should('include', '/dashboard')
     cy.contains('something something')
+
   })
 
   // test that previous dates are not allowed
+
+  it('logs out', () => {
+    cy.logout()
+  })
+
 })
 
 describe('Recieving a New Task', () => {
-  beforeEach(() => {
+
+  
+
+  it('recieved a new task', () => {
+
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user2)
     cy
@@ -66,16 +74,17 @@ describe('Recieving a New Task', () => {
         // you need to wait a little while for cloud functions to create the user
         cy.get('[data-test="loginButton"]').click()
       })
-  })
-
-  it.skip('recieved a new task', () => {
     cy.url().should('include', '/dashboard')
     cy.contains('something something')
+  })
+
+  it('logs out', () => {
+       cy.logout()
   })
 })
 
 describe('Sending multiple tasks to the same User', () => {
-  it.skip('sends a second task', () => {
+  it ('sends a second task', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user1)
     cy.get('input[name=password]').type(password1)
@@ -89,13 +98,21 @@ describe('Sending multiple tasks to the same User', () => {
     cy.contains('something something else')
   })
 
-  it.skip('Recieves the second task', () => {
+  it('logs out', () => {
+    cy.logout()
+  })
+
+  it ('Recieves the second task', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user2)
     cy.get('input[name=password]').type(password2)
     cy.get('[data-test="loginButton"]').click()
     cy.url().should('include', '/dashboard')
     cy.contains('something something else')
+  })
+
+  it('logs out', () => {
+    cy.logout()
   })
 })
 
@@ -108,14 +125,12 @@ describe('Accepting a Pending Task', () => {
     })
   })
 
-  beforeEach(() => {
+
+  it('accepts a pending task', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user1)
     cy.get('input[name=password]').type(password1)
     cy.get('[data-test="loginButton"]').click()
-  })
-
-  it('accepts a pending task', () => {
     cy.url().should('include', '/dashboard')
     cy
       .contains('something something')
@@ -174,17 +189,19 @@ describe('Accepting a Pending Task', () => {
       .contains('Active')
       .should('exist')
   })
+  it('logs out', () => {
+    cy.logout()
+  })
 })
 
 describe('Sender can see their task has been accepted', () => {
-  beforeEach(() => {
+ 
+
+  it ('accepts a pending task', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user1)
     cy.get('input[name=password]').type(password1)
     cy.get('[data-test="loginButton"]').click()
-  })
-
-  it.skip('accepts a pending task', () => {
     cy.url().should('include', '/dashboard')
     cy
       .contains('something something else')
@@ -193,10 +210,13 @@ describe('Sender can see their task has been accepted', () => {
       .contains('Active')
       .should('exist')
   })
+  it('logs out', () => {
+    cy.logout()
+  })
 })
 
 describe('Rejecting a Pending Task', () => {
-  it.skip('Sends a task to user 2', () => {
+  it ('Sends a task to user 2', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user1)
     cy.get('input[name=password]').type(password1)
@@ -209,8 +229,11 @@ describe('Rejecting a Pending Task', () => {
     cy.url().should('include', '/dashboard')
     cy.contains('something something hey').should('exist')
   })
+  it('logs out', () => {
+    cy.logout()
+  })
 
-  it.skip('User 2 rejects the task', () => {
+  it ('User 2 rejects the task', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user2)
     cy.get('input[name=password]').type(password2)
@@ -226,7 +249,11 @@ describe('Rejecting a Pending Task', () => {
     cy.contains('something something hey').should('not.exist')
   })
 
-  it.skip('User 1 can see the task has been rejected', () => {
+  it('logs out', () => {
+    cy.logout()
+  })
+
+  it ('User 1 can see the task has been rejected', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user1)
     cy.get('input[name=password]').type(password1)
@@ -234,22 +261,29 @@ describe('Rejecting a Pending Task', () => {
     cy.wait(15000)
     cy.get('[data-test="taskDeclined"]').should('exist')
   })
+
+  it('logs out', () => {
+    cy.logout()
+  })
 })
 
 describe('Delivering on a Task', () => {
-  beforeEach(() => {
+
+
+  it ('upload and submit a task', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(username)
     cy.get('input[name=password]').type(`test123`)
     cy.get('[data-test="loginButton"]').click()
-  })
-
-  it.skip('upload and submit a task', () => {
     cy.contains('Send Someone A Realsie').click()
     cy.get('input[type=text]').type(`something something`)
     cy.get('input[type=email]').type(`something@something.com`)
     cy.get('input[type=submit]').click()
     cy.contains('something something')
+  })
+
+  it('logs out', () => {
+    cy.logout()
   })
 
   // test that user account gets created from email in task
@@ -258,7 +292,7 @@ describe('Delivering on a Task', () => {
 
 // make sure you delete user at the end
 describe('Delete test User Accounts', () => {
-  it.skip('deletes user1 account', () => {
+  it ('deletes user1 account', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user1)
     cy.get('input[name=password]').type(password1)
@@ -273,8 +307,10 @@ describe('Delete test User Accounts', () => {
     cy.get('[data-test="deleteUser"]').click()
     cy.url().should('include', '/login')
   })
-
-  it.skip('deletes user2 account', () => {
+  it('logs out', () => {
+    cy.logout()
+  })
+  it ('deletes user2 account', () => {
     cy.visit('/login')
     cy.get('input[name=email-address]').type(user2)
     cy.get('input[name=password]').type(password2)

@@ -1,7 +1,7 @@
 {
   "projects": {
     "production": "hive-3027b",
-    "staging": "notforrealsies-f5b75"
+    "staging": "notforrealsies-f5b75",
+    "default": "notforrealsies-f5b75"
   }
 }
-

@@ -1,7 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 
-admin.initializeApp(functions.config().firebase)
+admin.initializeApp()
 
 const { saveUser, createClient, cleanupUser } = require('./helpers/auth.js')
 const { updateTask, challengeDeclined } = require('./helpers/crud.js')

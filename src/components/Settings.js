@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react'
 import { Card, Layout, Banner } from '@shopify/polaris'
 import { firebaseAuth } from '../constants/firebase.js'

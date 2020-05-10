@@ -2,12 +2,23 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "dependencies": {
-    "firebase-admin": "~4.2.1",
-    "firebase-functions": "^0.5.7",
+    "firebase-admin": "^8.12.1",
+    "firebase-functions": "^3.6.1",
     "mailgun-js": "^0.13.1",
     "nodemailer": "^4.1.0",
     "secure-compare": "^3.0.1",
     "stripe": "^4.23.1"
   },
-  "private": true
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint --max-warnings=0 .",
+    "serve": "firebase serve --only functions",
+    "shell": "firebase experimental:functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "private": true,
+  "engines": {
+    "node": "10"
+  }
 }

@@ -20,20 +20,22 @@ exports.saveUser = functions.auth.user().onCreate(event => {
 // creates a new user when a new task is created
 exports.createClient = functions.database
   .ref('/users/{anyUser}/sent/{anyTask}')
-  .onCreate(event => {
-    const userEmail = event.data.val().client
-    const title = event.data.val().deliverable
-    const from = event.data.val().from
-    const due = event.data.val().deadline || null
-    const createdAt = event.data.val().createdAt
-    const taskId = event.data.val().taskId
+  .onCreate(async (snapshot, context) => {
+    const userEmail = snapshot.val().client
+    const title = snapshot.val().deliverable
+    const from = snapshot.val().from
+    const due = snapshot.val().deadline || null
+    const createdAt = snapshot.val().createdAt
+    const taskId = snapshot.val().taskId
 
+    try {
     // search if the account already exists
-    admin
-      .auth()
-      .getUserByEmail(event.data.val().client)
-      .then(userRecord =>
-        admin
+      const userRecord = await admin
+        .auth()
+        .getUserByEmail(snapshot.val().client)
+
+      if (userRecord) {
+        return admin
           .database()
           .ref(`/users/${userRecord.uid}/pending/${taskId}`)
           .update({
@@ -42,21 +44,17 @@ exports.createClient = functions.database
             due,
             taskId,
             createdAt
-          })
-          .catch(error =>
-            console.log('Error sending pending task to reciever', error)
-          )
-      )
-      .catch(error =>
-        admin
+          }).then(() => console.log('pending task added to existing user'))
+      } else {
+        // create new user and send pending task to new user
+        return admin
           .auth()
           .createUser({
             email: userEmail,
             emailVerified: false,
             password: 'changeme'
           })
-          .then(userRecord => {
-            // send pending task to new user
+          .then(userRecord =>
             admin
               .database()
               .ref(`/users/${userRecord.uid}/pending/${taskId}`)
@@ -67,8 +65,12 @@ exports.createClient = functions.database
                 taskId,
                 createdAt
               })
-          })
-      )
+          ).then(() => console.log('pending task added to new user'))
+      }
+    } catch (error) {
+      console.log('Error sending pending task to reciever', error)
+    }
+    return null
   })
 
 // When a user deletes their account, clean up after them
